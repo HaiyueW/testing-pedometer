@@ -57,7 +57,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
-        android:id="@+id/info"
+        android:id="@+id/login_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/phone"
@@ -70,7 +70,7 @@
         android:id="@+id/pedo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/info"
+        android:layout_alignLeft="@+id/login_info"
         android:layout_alignParentBottom="true"
         android:text="@string/pedo" />
 

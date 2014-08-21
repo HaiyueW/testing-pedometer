@@ -8,6 +8,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 //import android.widget.Toast;
+import android.widget.EditText;
+import android.widget.TextView;
 
 public class Login extends Activity {
 
@@ -15,17 +17,62 @@ public class Login extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
-		setupMessageButton();
+		setupLoginButton();
+		setupClearButton();
 	}
 
-	private void setupMessageButton(){
+	private void setupClearButton()
+	{
+		Button messageButton = (Button)findViewById(R.id.clear);
+    	messageButton.setOnClickListener(new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+		
+		
+		EditText id=(EditText)findViewById(R.id.userID);
+		EditText password=(EditText)findViewById(R.id.userPass);
+		id.setText("");
+		password.setText("");
+		TextView info=(TextView)findViewById(R.id.login_info);
+		info.setText("");
+		
+		
+		}
+		});
+	}
+    	
+    	
+    	
+	private void setupLoginButton(){
     	Button messageButton = (Button)findViewById(R.id.login);
     	messageButton.setOnClickListener(new View.OnClickListener() {
 			@Override
-			public void onClick(View v) {
+		public void onClick(View v) {
 				//Toast.makeText(Posture.this, "Return to profile", Toast.LENGTH_LONG).show();
 				//startActivity(new Intent(Heartrate.this, MainActivity.class));
-				finish();
+		EditText id=(EditText)findViewById(R.id.userID);
+		EditText password=(EditText)findViewById(R.id.userPass);
+		String id_string = id.getText().toString();
+		String id_pass = password.getText().toString();
+		
+		if(id_string.equalsIgnoreCase("admin") && id_pass.equals("password")) {
+		TextView info=(TextView)findViewById(R.id.login_info);
+		
+		info.setText("Correct Password");
+		finish();
+		}
+		
+		else{
+			
+		
+		TextView info=(TextView)findViewById(R.id.login_info);
+		
+		info.setText("Wrong Password");
+		//String password=person.getText().toString();	
+	    }	
+			
+				
+		
 			}
 		});	
     }

@@ -9,7 +9,7 @@
     tools:context="com.Haiyue.profile_v1.MainActivity" >
 
     <TextView
-        android:id="@+id/info"
+        android:id="@+id/login_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/phone"
@@ -76,7 +76,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/name"
-        android:layout_alignLeft="@+id/info"
+        android:layout_alignLeft="@+id/login_info"
         android:layout_marginBottom="14dp"
         android:text="@string/age"
         android:textAppearance="?android:attr/textAppearanceLarge" />
