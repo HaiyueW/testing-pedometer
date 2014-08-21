@@ -38,6 +38,10 @@
             android:name=".Posture"
             android:label="@string/title_activity_posture" >
         </activity>
+        <activity
+            android:name=".Login"
+            android:label="@string/title_activity_login" >
+        </activity>
     </application>
 
 </manifest>

@@ -15,6 +15,7 @@
     <string name="loca">Location</string>
     <string name="post">Posture</string>
     <string name="title_activity_heartrate">Heartrate</string>
+    <string name="title_activity_login">Login</string>
     <string name="subheart">ECG-Heart Rate</string>
     <string name="returnheart">Return</string>
     <string name="title_activity_pedometer">Pedometer</string>

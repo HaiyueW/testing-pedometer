@@ -13,13 +13,16 @@ import android.widget.Button;
 public class MainActivity extends Activity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        
         setupMessageButton1();
         setupMessageButton2();
         setupMessageButton3();
         setupMessageButton4();
+        Intent Login_window = new Intent(this, Login.class); // adds the log in window here
+        startActivity(Login_window);
     }
 
     private void setupMessageButton1(){
