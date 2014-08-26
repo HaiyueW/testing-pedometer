@@ -1,4 +1,6 @@
-package com.Haiyue.profile_v1;
+package ece4600.mainapp;
+
+import com.Haiyue.profile_v1.R;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -8,21 +10,21 @@ import android.view.View;
 import android.widget.Button;
 //import android.widget.Toast;
 
-public class Pedometer extends Activity {
+public class Location extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_pedometer);
+		setContentView(R.layout.activity_location);
 		setupMessageButton();
 	}
 
 	private void setupMessageButton(){
-    	Button messageButton = (Button)findViewById(R.id.returnpedo);
+    	Button messageButton = (Button)findViewById(R.id.returnloca);
     	messageButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				//Toast.makeText(Pedometer.this, "Return to profile", Toast.LENGTH_LONG).show();
+				//Toast.makeText(Location.this, "Return to profile", Toast.LENGTH_LONG).show();
 				//startActivity(new Intent(Heartrate.this, MainActivity.class));
 				finish();
 			}
@@ -32,7 +34,7 @@ public class Pedometer extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.pedometer, menu);
+		getMenuInflater().inflate(R.menu.location, menu);
 		return true;
 	}
 
