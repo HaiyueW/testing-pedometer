@@ -1,6 +1,6 @@
-package ece4600.mainapp;
+package com.ece4600.mainapp;
 
-import com.Haiyue.profile_v1.R;
+import com.ece4600.mainapp.R;
 
 import android.app.Activity;
 import android.os.Bundle;

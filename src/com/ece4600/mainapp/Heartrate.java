@@ -1,6 +1,6 @@
-package ece4600.mainapp;
+package com.ece4600.mainapp;
 
-import com.Haiyue.profile_v1.R;
+import com.ece4600.mainapp.R;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -10,31 +10,31 @@ import android.view.View;
 import android.widget.Button;
 //import android.widget.Toast;
 
-public class Location extends Activity {
+public class Heartrate extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_location);
+		setContentView(R.layout.activity_heartrate);
 		setupMessageButton();
 	}
-
+	
 	private void setupMessageButton(){
-    	Button messageButton = (Button)findViewById(R.id.returnloca);
+    	Button messageButton = (Button)findViewById(R.id.returnheart);
     	messageButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				//Toast.makeText(Location.this, "Return to profile", Toast.LENGTH_LONG).show();
+				//Toast.makeText(Heartrate.this, "Return to profile", Toast.LENGTH_LONG).show();
 				//startActivity(new Intent(Heartrate.this, MainActivity.class));
 				finish();
 			}
 		});	
     }
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.location, menu);
+		getMenuInflater().inflate(R.menu.heartrate, menu);
 		return true;
 	}
 
