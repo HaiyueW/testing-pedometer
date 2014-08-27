@@ -27,5 +27,9 @@
     <string name="title_activity_posture">Posture</string>
     <string name="subpost">Posture</string>
     <string name="returnpost">Return</string>
+    <string name="startTxt">Start</string>
+    <string name="stopTxt">Stop</string>
+    <string name="timeTxt">Time</string>
+    <string name="voltTxt">Voltage</string>
 
 </resources>

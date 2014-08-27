@@ -25,4 +25,33 @@
         android:layout_centerHorizontal="true"
         android:text="@string/returnheart" />
 
+    <Button
+        android:id="@+id/startButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/subheart"
+        android:layout_marginTop="16dp"
+        android:layout_toLeftOf="@+id/returnheart"
+        android:onClick="startDAQ"
+        android:text="@string/startTxt" />
+
+    <LinearLayout
+        android:id="@+id/chart"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_below="@+id/startButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="41dp"
+        android:orientation="vertical" >
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/stopButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/chart"
+        android:layout_toRightOf="@+id/returnheart"
+        android:onClick="stopDAQ"
+        android:text="@string/stopTxt" />
+
 </RelativeLayout>
