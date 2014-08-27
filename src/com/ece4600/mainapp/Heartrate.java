@@ -73,10 +73,7 @@ public class Heartrate extends Activity implements SensorEventListener {
 	
 	public void stopDAQ (View V){
 		start = false;
-		line.stop();
-		time =0;
-		
-		
+			
 	}
 	
 	public void startDAQ (View V){
@@ -95,6 +92,12 @@ public class Heartrate extends Activity implements SensorEventListener {
 		time = 0;
 	}
 
+	public void clearDAQ(View V){
+		start = false;
+		line.stop();
+		time =0;
+		
+	}
 	@Override
 	public void onSensorChanged(SensorEvent event) {
 		if (start) {

@@ -25,16 +25,6 @@
         android:layout_centerHorizontal="true"
         android:text="@string/returnheart" />
 
-    <Button
-        android:id="@+id/startButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/subheart"
-        android:layout_marginTop="16dp"
-        android:layout_toLeftOf="@+id/returnheart"
-        android:onClick="startDAQ"
-        android:text="@string/startTxt" />
-
     <LinearLayout
         android:id="@+id/chart"
         android:layout_width="match_parent"
@@ -46,12 +36,33 @@
     </LinearLayout>
 
     <Button
+        android:id="@+id/clearButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/chart"
+        android:layout_marginLeft="18dp"
+        android:layout_toRightOf="@+id/stopButton"
+        android:onClick="clearDAQ"
+        android:text="@string/clearTxt" />
+
+    <Button
         android:id="@+id/stopButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/chart"
-        android:layout_toRightOf="@+id/returnheart"
+        android:layout_centerHorizontal="true"
         android:onClick="stopDAQ"
         android:text="@string/stopTxt" />
+
+    <Button
+        android:id="@+id/startButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/subheart"
+        android:layout_marginRight="14dp"
+        android:layout_marginTop="22dp"
+        android:layout_toLeftOf="@+id/returnheart"
+        android:onClick="startDAQ"
+        android:text="@string/startTxt" />
 
 </RelativeLayout>
