@@ -32,12 +32,15 @@ public class ECGLine {
 		private GraphicalView mChartView;
 		private Time nowTxt = new Time(Time.getCurrentTimezone());
 		
-		@SuppressWarnings("deprecation")
+		public char status = 0;
+		
+		
 		public void stop(){
-			series.clear();
+			status =1;
+			/*series.clear();
 			mDataset.removeSeries(series);
 			mRenderer.removeAllRenderers();
-			mRenderer.clearXTextLabels();
+			mRenderer.clearXTextLabels();*/
 			
 		}
 		
@@ -45,7 +48,22 @@ public class ECGLine {
 			//int[] margins = {100, 25, 250, 250};
 			// initializes class:
 			// Add single dataset to multiple dataset
+			switch(status){
+			case 0:
 			mDataset.addSeries(series);
+			
+			case 1:
+				series.clear();
+				mDataset.removeSeries(series);
+				mRenderer.removeAllRenderers();
+				mRenderer.clearXTextLabels();	
+				
+				mDataset.addSeries(series);
+				status = 2;
+			case 2:
+				
+			}
+		
 			
 			// Customization time for line 1!
 			renderer.setColor(Color.RED);
@@ -56,7 +74,7 @@ public class ECGLine {
 			// Enable Zoom
 			mRenderer.setApplyBackgroundColor(true);
 			mRenderer.setBackgroundColor(Color.BLACK);
-			//mRenderer.setZoomButtonsVisible(true);
+			mRenderer.setZoomButtonsVisible(true);
 			mRenderer.setZoomEnabled(true);
 			//mRenderer.setMargins(margins);
 			mRenderer.setChartTitle("ECG Measurement");
@@ -97,7 +115,8 @@ public class ECGLine {
 			}
 			
 			
-			if (count < 50){
+			
+			if (count < 1000){
 				count++;
 			}
 			else{
