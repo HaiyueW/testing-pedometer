@@ -32,5 +32,6 @@
     <string name="timeTxt">Time</string>
     <string name="voltTxt">Voltage</string>
     <string name="clearTxt">Clear</string>
+    <string name="pauseTxt">Pause</string>
 
 </resources>

@@ -73,6 +73,9 @@ public class Heartrate extends Activity implements SensorEventListener {
 	
 	public void stopDAQ (View V){
 		start = false;
+		line.stop();
+		time =0;
+		firstTime=true;
 			
 	}
 	
@@ -86,15 +89,15 @@ public class Heartrate extends Activity implements SensorEventListener {
 		
 		firstTime=false;
 		time = 0;
-		index =0;
+		
 
 		}
-		
+		index =0;
 		start = true;
 		
 	}
 
-	public void clearDAQ(View V){
+	public void pauseDAQ(View V){
 		start = false;
 		line.stop();
 		time =0;
@@ -103,7 +106,7 @@ public class Heartrate extends Activity implements SensorEventListener {
 	}
 	@Override
 	public void onSensorChanged(SensorEvent event) {
-		
+		if (start) {
 		if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
 			float x = event.values[0];
 			
@@ -112,7 +115,7 @@ public class Heartrate extends Activity implements SensorEventListener {
 			
 			//line.addPoint(time,(double) x);
 			//Get Graph information:
-			if (start) {
+			
 			GraphicalView lineView = line.getView(this);
 			//Get reference to layout:
 			LinearLayout layout =(LinearLayout)findViewById(R.id.chart);

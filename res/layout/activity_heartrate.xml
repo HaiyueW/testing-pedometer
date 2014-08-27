@@ -36,14 +36,14 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/clearButton"
+        android:id="@+id/pauseButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/chart"
         android:layout_marginLeft="18dp"
         android:layout_toRightOf="@+id/stopButton"
-        android:onClick="clearDAQ"
-        android:text="@string/clearTxt" />
+        android:onClick="pauseDAQ"
+        android:text="@string/pauseTxt" />
 
     <Button
         android:id="@+id/stopButton"

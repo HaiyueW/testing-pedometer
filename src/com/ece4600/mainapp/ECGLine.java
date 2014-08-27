@@ -116,7 +116,7 @@ public class ECGLine {
 			
 			
 			
-			if (count < 1000){
+			if (count < 50){
 				count++;
 			}
 			else{
