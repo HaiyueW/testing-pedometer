@@ -8,53 +8,49 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@drawable/bg3"
     tools:context="com.ece4600.mainapp.MainActivity" >
-
+    
     <EditText
-        android:id="@+id/userID"
+        android:id="@+id/txtuser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/textView1"
-        android:layout_alignBottom="@+id/textView1"
-        android:layout_toRightOf="@+id/textView2"
+        android:layout_alignBottom="@+id/user"
+        android:layout_toRightOf="@+id/pass"
         android:ems="10"
-        android:hint="enter user id"
-        android:textColor="#FFF5"
-        android:textColorHint="#FFF5" >
-
-        <requestFocus />
-    </EditText>
+        android:hint="Enter Username"
+        android:textColor="#F000"
+        android:textColorHint="#F000" />
 
     <EditText
-        android:id="@+id/userPass"
+        android:id="@+id/txtpass"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/textView2"
-        android:layout_alignLeft="@+id/userID"
+        android:layout_alignBottom="@+id/pass"
+        android:layout_alignLeft="@+id/txtuser"
         android:ems="10"
-        android:hint="enter password"
+        android:hint="Enter Password"
         android:inputType="textPassword"
-        android:textColor="#FFF5"
-        android:textColorHint="#FFF5" />
+        android:textColor="#F000"
+        android:textColorHint="#F000" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/pass"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/login"
         android:layout_marginRight="17dp"
-        android:text="Password:"
+        android:text="@string/pass"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="#FFFF"
         android:typeface="monospace" />
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/user"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/userPass"
-        android:layout_alignLeft="@+id/textView2"
+        android:layout_above="@+id/txtpass"
+        android:layout_alignLeft="@+id/pass"
         android:layout_marginBottom="16dp"
-        android:text="User ID:"
+        android:text="@string/user"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="#FFFF"
         android:typeface="monospace" />
@@ -64,31 +60,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignRight="@+id/textView1"
+        android:layout_alignRight="@+id/user"
         android:layout_marginBottom="14dp"
         android:background="@android:drawable/btn_default"
-        android:text="Login"
+        android:text="@string/login"
         android:visibility="visible" />
 
     <Button
-        android:id="@+id/clear"
+        android:id="@+id/cancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/login"
-        android:layout_alignBottom="@+id/login"
-        android:layout_alignRight="@+id/userPass"
+        android:layout_alignRight="@+id/txtpass"
+        android:layout_below="@+id/txtpass"
+        android:layout_marginRight="30dp"
         android:background="@android:drawable/btn_default"
-        android:text="Clear" />
-
-    <TextView
-        android:id="@+id/login_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/login"
-        android:layout_alignBottom="@+id/login"
-        android:layout_toRightOf="@+id/textView2"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#FF00"
-        android:textSize="12sp" />
+        android:text="@string/cancel" />
 
 </RelativeLayout>

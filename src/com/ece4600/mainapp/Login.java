@@ -1,103 +1,85 @@
 package com.ece4600.mainapp;
 
 import com.ece4600.mainapp.R;
-
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
-//import android.widget.Toast;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.Toast;
 
-public class Login extends Activity {
-
+public class Login extends Activity implements OnClickListener{
+	EditText txtuser;
+	EditText txtpass;
+	Button login;
+	Button cancel;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
-		setupLoginButton();
-		setupClearButton();
+		txtuser = (EditText)findViewById(R.id.txtuser);
+		txtpass = (EditText)findViewById(R.id.txtpass);
+		login = (Button)findViewById(R.id.login);
+		cancel = (Button)findViewById(R.id.cancel);
+		login.setOnClickListener(this);
+		cancel.setOnClickListener(this);
 	}
 
-	private void setupClearButton()
-	{
-		Button messageButton = (Button)findViewById(R.id.clear);
-    	messageButton.setOnClickListener(new View.OnClickListener() {
-		@Override
-		public void onClick(View v) {
-		
-		
-		EditText id=(EditText)findViewById(R.id.userID);
-		EditText password=(EditText)findViewById(R.id.userPass);
-		id.setText("");
-		password.setText("");
-		TextView info=(TextView)findViewById(R.id.login_info);
-		info.setText("");
-		
-		
+@Override
+public void onClick(View v) {
+	String user = txtuser.getText().toString();
+	String pass = txtpass.getText().toString();
+	
+	switch(v.getId()){
+	case R.id.login:
+		if(user.equals("user") && pass.equals("pass")){
+			Intent i = new Intent(Login.this,MainActivity.class);
+			startActivity(i);
 		}
-		});
-	}
-    	
-    	
-    	
-	private void setupLoginButton(){
-    	Button messageButton = (Button)findViewById(R.id.login);
-    	messageButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-		public void onClick(View v) {
-				//Toast.makeText(Posture.this, "Return to profile", Toast.LENGTH_LONG).show();
-				//startActivity(new Intent(Heartrate.this, MainActivity.class));
-		EditText id=(EditText)findViewById(R.id.userID);
-		EditText password=(EditText)findViewById(R.id.userPass);
-		String id_string = id.getText().toString();
-		String id_pass = password.getText().toString();
-		
-		if(id_string.equalsIgnoreCase("admin") && id_pass.equals("password")) {
-		TextView info=(TextView)findViewById(R.id.login_info);
-		
-		info.setText("Correct Password");
-		finish();
-		}
-		
 		else{
+			Message(v);
+			//Toast.makeText(Login.this, "Wrong Username/Password", Toast.LENGTH_SHORT).show();
+		}
+		break;
+	case R.id.cancel:
+		txtuser.setText("");
+		txtpass.setText("");
+		break;
+	default:
+		break;
+	}
+	
+}
+
+public void Message(View v){
+	AlertDialog.Builder alertDialogHint = new AlertDialog.Builder(this);
+	alertDialogHint.setMessage("Wrong Username/Password");
+	alertDialogHint.setNeutralButton("OK",
+	new DialogInterface.OnClickListener() {
+		
+		@Override
+		public void onClick(DialogInterface dialog, int which) {
+			Intent i = new Intent(Login.this,Login.class);
+			startActivity(i);
 			
-		
-		TextView info=(TextView)findViewById(R.id.login_info);
-		
-		info.setText("Wrong Password");
-		//String password=person.getText().toString();	
-	    }	
-			
-				
-		
-			}
-		});	
-    }
-	
-	
-//    private void setupMessageButton(){
-//    	Button messageButton = (Button)findViewById(R.id.heart);
-//    	messageButton.setOnClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				//Toast.makeText(MainActivity.this, "Heart rate", Toast.LENGTH_LONG).show();
-//				startActivity(new Intent(MainActivity.this, Heartrate.class));
-//			}
-//		});	
-//    }
-//	
-	
+		}
+	});
+	AlertDialog alertDialog = alertDialogHint.create();
+	alertDialog.show();
+
+}
 	
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		//getMenuInflater().inflate(R.menu.posture, menu);
+		//getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
 

@@ -33,5 +33,9 @@
     <string name="voltTxt">Voltage</string>
     <string name="clearTxt">Clear</string>
     <string name="pauseTxt">Pause</string>
+    <string name="user">Username</string>
+    <string name="pass">Password</string>
+    <string name="login">Login</string>
+    <string name="cancel">Cancel</string>
 
 </resources>

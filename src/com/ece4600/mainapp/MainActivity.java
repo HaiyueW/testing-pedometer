@@ -1,7 +1,5 @@
 package com.ece4600.mainapp;
 
-import com.ece4600.mainapp.R;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,14 +15,13 @@ public class MainActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        
+        setContentView(R.layout.activity_main); 
         setupMessageButton1();
         setupMessageButton2();
         setupMessageButton3();
         setupMessageButton4();
-        Intent Login_window = new Intent(this, Login.class); // adds the log in window here
-        startActivity(Login_window);
+        //Intent Login_window = new Intent(this, Login.class); // adds the log in window here
+        //startActivity(Login_window);
     }
 
     private void setupMessageButton1(){
