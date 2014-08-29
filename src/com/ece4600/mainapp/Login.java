@@ -41,10 +41,10 @@ public void onClick(View v) {
 		if(user.equals("user") && pass.equals("pass")){
 			Intent i = new Intent(Login.this,MainActivity.class);
 			startActivity(i);
+			Toast.makeText(Login.this, "Login Successful", Toast.LENGTH_SHORT).show();
 		}
 		else{
 			Message(v);
-			//Toast.makeText(Login.this, "Wrong Username/Password", Toast.LENGTH_SHORT).show();
 		}
 		break;
 	case R.id.cancel:
