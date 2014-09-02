@@ -3,6 +3,7 @@ package com.ece4600.mainapp;
 import com.ece4600.mainapp.R;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,7 +26,7 @@ public class Pedometer extends Activity {
 			@Override
 			public void onClick(View v) {
 				//Toast.makeText(Pedometer.this, "Return to profile", Toast.LENGTH_LONG).show();
-				//startActivity(new Intent(Heartrate.this, MainActivity.class));
+				startActivity(new Intent(Pedometer.this, MainActivity.class));
 				finish();
 			}
 		});	
@@ -43,10 +44,25 @@ public class Pedometer extends Activity {
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
+		super.onOptionsItemSelected(item);
+    	switch(item.getItemId()){
+    	case R.id.pedomenu_heart:
+    		startActivity(new Intent(this, Heartrate.class));
+    		finish();
+    		break;
+    	case R.id.pedomenu_loca:
+    		startActivity(new Intent(this, Location.class));
+    		finish();
+    		break;
+    	case R.id.pedomenu_post:
+    		startActivity(new Intent(this, Posture.class));
+    		finish();
+    		break;
+    	}
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            return true;
+        }
+        return true; 
 	}
 }

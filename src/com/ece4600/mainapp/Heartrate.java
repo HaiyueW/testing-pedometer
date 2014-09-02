@@ -4,6 +4,7 @@ import org.achartengine.GraphicalView;
 
 import com.ece4600.mainapp.R;
 import android.app.Activity;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -13,7 +14,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-//import android.widget.Toast;
 import android.widget.LinearLayout;
 
 public class Heartrate extends Activity implements SensorEventListener {
@@ -31,7 +31,7 @@ public class Heartrate extends Activity implements SensorEventListener {
 			@Override
 			public void onClick(View v) {
 				//Toast.makeText(Heartrate.this, "Return to profile", Toast.LENGTH_LONG).show();
-				//startActivity(new Intent(Heartrate.this, MainActivity.class));
+				startActivity(new Intent(Heartrate.this, MainActivity.class));
 				finish();
 			}
 		});	
@@ -49,11 +49,26 @@ public class Heartrate extends Activity implements SensorEventListener {
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
+		super.onOptionsItemSelected(item);
+    	switch(item.getItemId()){
+    	case R.id.heartmenu_pedo:
+    		startActivity(new Intent(this, Pedometer.class));
+    		finish();
+    		break;
+    	case R.id.heartmenu_loca:
+    		startActivity(new Intent(this, Location.class));
+    		finish();
+    		break;
+    	case R.id.heartmenu_post:
+    		startActivity(new Intent(this, Posture.class));
+    		finish();
+    		break;
+    	}
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            return true;
+        }
+        return true; 
 	}
 	
 	//----------------------------------

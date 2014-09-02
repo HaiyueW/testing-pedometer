@@ -7,5 +7,9 @@
         android:orderInCategory="100"
         android:showAsAction="never"
         android:title="@string/action_settings"/>
+    <item android:id="@+id/postmenu_heart" android:title="Heartrate"></item>
+    <item android:id="@+id/postmenu_pedo" android:title="Pedometer"></item>
+    <item android:id="@+id/postmenu_loca" android:title="Location"></item>
+    <item android:id="@+id/postmenu_about" android:title="About"></item>
 
 </menu>
