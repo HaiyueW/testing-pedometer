@@ -5,7 +5,9 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,6 +44,11 @@ public void onClick(View v) {
 			Intent i = new Intent(Login.this,MainActivity.class);
 			startActivity(i);
 			Toast.makeText(Login.this, "Login Successful", Toast.LENGTH_SHORT).show();
+			SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+			SharedPreferences.Editor editor = preferences.edit();
+			editor.putString("user", txtuser.getText().toString());
+			editor.putString("pass", txtpass.getText().toString());
+			editor.commit();
 		}
 		else{
 			Message(v);

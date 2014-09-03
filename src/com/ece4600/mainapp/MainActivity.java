@@ -3,6 +3,7 @@ package com.ece4600.mainapp;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,6 +31,7 @@ public class MainActivity extends Activity {
 			public void onClick(View v) {
 				//Toast.makeText(MainActivity.this, "Heart rate", Toast.LENGTH_LONG).show();
 				startActivity(new Intent(MainActivity.this, Heartrate.class));
+				finish();
 			}
 		});	
     }
@@ -41,6 +43,7 @@ public class MainActivity extends Activity {
 			public void onClick(View v) {
 				//Toast.makeText(MainActivity.this, "Pedometer", Toast.LENGTH_LONG).show();
 				startActivity(new Intent(MainActivity.this, Pedometer.class));
+				finish();
 			}
 		});	
     }
@@ -52,6 +55,7 @@ public class MainActivity extends Activity {
 			public void onClick(View v) {
 				//Toast.makeText(MainActivity.this, "Location", Toast.LENGTH_LONG).show();
 				startActivity(new Intent(MainActivity.this, Location.class));
+				finish();
 			}
 		});	
     }
@@ -63,6 +67,7 @@ public class MainActivity extends Activity {
 			public void onClick(View v) {
 				//Toast.makeText(MainActivity.this, "Posture", Toast.LENGTH_LONG).show();
 				startActivity(new Intent(MainActivity.this, Posture.class));
+				finish();
 			}
 		});	
     }
@@ -95,6 +100,11 @@ public class MainActivity extends Activity {
     		break;
     	case R.id.mainmenu_post:
     		startActivity(new Intent(this, Posture.class));
+    		finish();
+    		break;
+    	case R.id.mainmenu_logout:
+    		PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().clear().commit();
+    		startActivity(new Intent(this, Login.class));
     		finish();
     		break;
     	}
