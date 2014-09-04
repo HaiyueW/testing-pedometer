@@ -32,6 +32,12 @@ public class Posture extends Activity {
 		});	
     }
 	
+	public void onBackPressed() {
+		// do something on back.return;		
+		startActivity(new Intent(Posture.this, MainActivity.class));
+		finish();
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.

@@ -36,6 +36,12 @@ public class Heartrate extends Activity implements SensorEventListener {
 			}
 		});	
     }
+	
+	public void onBackPressed() {
+		// do something on back.return;		
+		startActivity(new Intent(Heartrate.this, MainActivity.class));
+		finish();
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
