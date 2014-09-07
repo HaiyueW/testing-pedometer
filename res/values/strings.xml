@@ -49,5 +49,6 @@
     <string name="map">Map</string>
     <string name="reset">Reset</string>
     <string name="title_activity_display_wifi">DisplayWifi</string>
+     <string name="return_location">Return</string>
 
 </resources>
