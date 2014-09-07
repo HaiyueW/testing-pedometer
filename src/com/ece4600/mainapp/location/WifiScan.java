@@ -1,4 +1,4 @@
-package com.ece4600.mainapp;
+package com.ece4600.mainapp.location;
 
 import java.util.ArrayList;
 import java.util.List;

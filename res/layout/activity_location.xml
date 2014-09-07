@@ -25,4 +25,13 @@
         android:layout_centerHorizontal="true"
         android:text="@string/returnloca" />
 
+    <Button
+        android:id="@+id/scan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/returnloca"
+        android:layout_below="@+id/subloca"
+        android:layout_marginTop="144dp"
+        android:text="@string/scan" />
+
 </RelativeLayout>

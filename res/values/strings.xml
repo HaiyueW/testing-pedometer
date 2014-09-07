@@ -39,5 +39,15 @@
     <string name="cancel">Cancel</string>
     <string name="title_activity_splash">Splash</string>
     <string name="startscreen">Start</string>
+    <string name="scan">scan</string>
+    <string name="button_refresh">Refresh</string>
+    <string name="button_training">Set training point</string>
+    <string name="button_locate">Locate</string>
+    <string name="button_map">Map</string>
+    <string name="button_wifi">Wifi</string>
+    <string name="loading">Loading…</string>
+    <string name="map">Map</string>
+    <string name="reset">Reset</string>
+    <string name="title_activity_display_wifi">DisplayWifi</string>
 
 </resources>

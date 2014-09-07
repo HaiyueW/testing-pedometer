@@ -1,0 +1,51 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/wifi_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:textIsSelectable="true"
+        android:text="@string/loading"
+    />
+    
+    <Button
+        android:id="@+id/wifi_refresh_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/wifi_info"
+        android:onClick="refreshAccessPoints"
+        android:text="@string/button_refresh" 
+	/>
+
+    <Button
+        android:id="@+id/wifi_training_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/wifi_refresh_button"
+        android:onClick="setTrainingPoint"
+        android:text="@string/button_training"
+	/>
+    
+    <Button
+        android:id="@+id/wifi_locate_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/wifi_training_button"
+        android:onClick="locate"
+        android:text="@string/button_locate"
+	/>
+    
+    <TextView
+        android:id="@+id/wifi_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/wifi_locate_button"
+        android:textIsSelectable="true"
+        android:text=""
+    />
+
+</RelativeLayout>

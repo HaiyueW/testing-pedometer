@@ -1,6 +1,7 @@
 package com.ece4600.mainapp;
 
 import com.ece4600.mainapp.R;
+import com.ece4600.mainapp.DisplayWifi;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+
 //import android.widget.Toast;
 
 public class Location extends Activity {
@@ -17,16 +19,33 @@ public class Location extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_location);
-		setupMessageButton();
+		setupMessageButton1();
+		setupMessageButton2();
 	}
-
-	private void setupMessageButton(){
+	
+	public void openWifiTab(View view) {
+    	Intent intent = new Intent(this, DisplayWifi.class);
+    	startActivity(intent);
+    }
+	
+	private void setupMessageButton1(){
     	Button messageButton = (Button)findViewById(R.id.returnloca);
     	messageButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				//Toast.makeText(Location.this, "Return to profile", Toast.LENGTH_LONG).show();
 				startActivity(new Intent(Location.this, MainActivity.class));
+				finish();
+			}
+		});	
+    }
+	private void setupMessageButton2(){
+    	Button messageButton = (Button)findViewById(R.id.scan);
+    	messageButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				//Toast.makeText(Location.this, "Return to profile", Toast.LENGTH_LONG).show();
+				startActivity(new Intent(Location.this, DisplayWifi.class));
 				finish();
 			}
 		});	
