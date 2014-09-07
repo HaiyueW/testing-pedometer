@@ -36,7 +36,8 @@
         </activity>
         <activity
             android:name=".Heartrate"
-            android:label="@string/title_activity_heartrate" >
+            android:label="@string/title_activity_heartrate"
+            android:screenOrientation="landscape" >
         </activity>
         <activity
             android:name=".Pedometer"
