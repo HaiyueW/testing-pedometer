@@ -39,7 +39,7 @@ public class DisplayWifi extends Activity implements WifiScanListener {
     
     private void setupMessageButtonreturn() {
 		// TODO Auto-generated method stub
-    	Button messageButton = (Button)findViewById(R.id.return_location);
+    	Button messageButton = (Button)findViewById(R.id.returnloca);
     	messageButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {

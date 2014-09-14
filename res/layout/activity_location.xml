@@ -18,7 +18,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <Button
-        android:id="@+id/returnloca"
+        android:id="@+id/RelativeLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -29,7 +29,7 @@
         android:id="@+id/scan"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/returnloca"
+        android:layout_alignLeft="@+id/RelativeLayout"
         android:layout_below="@+id/subloca"
         android:layout_marginTop="144dp"
         android:text="@string/scan" />

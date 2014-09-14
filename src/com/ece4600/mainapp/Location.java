@@ -29,7 +29,7 @@ public class Location extends Activity {
     }
 	
 	private void setupMessageButton1(){
-    	Button messageButton = (Button)findViewById(R.id.returnloca);
+    	Button messageButton = (Button)findViewById(R.id.RelativeLayout);
     	messageButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
