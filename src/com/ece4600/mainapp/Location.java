@@ -23,7 +23,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
+//edited by tianqi
 public class Location extends Activity {
 
 	private Button messageButton;
