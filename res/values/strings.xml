@@ -56,5 +56,6 @@
     <string name="bluepair">Paired Devices</string>
     <string name="blueoff">Turn Off</string>
     <string name="bluetooth">Bluetooth Setting</string>
+    <string name="bluecancel">Cancel</string>
 
 </resources>

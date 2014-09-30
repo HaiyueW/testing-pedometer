@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,7 +26,7 @@ import android.widget.Toast;
 
 public class Bluetooth extends Activity{
 	
-	Button blueon, blueoff, bluevisible, bluepair, bluesearch;
+	Button blueon, blueoff, bluevisible, bluepair, bluesearch, bluecancel;
 	private BluetoothAdapter myBluetoothAdapter;
 	private Set<BluetoothDevice> pairedDevices;
 	private ListView listpaired, listnew;
@@ -41,6 +42,7 @@ public class Bluetooth extends Activity{
 		bluevisible = (Button)findViewById(R.id.bluevisible);
 		bluepair = (Button)findViewById(R.id.bluepair);
 		bluesearch = (Button)findViewById(R.id.bluesearch);
+		bluecancel = (Button)findViewById(R.id.bluecancel);
 		listpaired = (ListView)findViewById(R.id.bluepairedlist);
 		listpaired.setOnItemClickListener(mDeviceClickListener);
 		listnew = (ListView)findViewById(R.id.bluenewlist);
@@ -95,12 +97,36 @@ public class Bluetooth extends Activity{
 					checkList.add(device);
 					adapter_search.add(device.getName() + "\n" +device.getAddress());
 	   				adapter_search.notifyDataSetChanged();
-	   				Toast.makeText(getApplicationContext(), "Devices Found", Toast.LENGTH_SHORT).show();
-	   				}				
+	   				final Toast toast = Toast.makeText(getApplicationContext(), "Devices Found", Toast.LENGTH_SHORT);
+	   			    toast.show();
+	   			    Handler handler = new Handler();
+	   			        handler.postDelayed(new Runnable() {
+	   			           @Override
+	   			           public void run() {
+	   			               toast.cancel(); 
+	   			           }
+	   			    }, 500);
+	   			}				
 			}else if(BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)){
-				Toast.makeText(getApplicationContext(), "Searching Devices", Toast.LENGTH_SHORT).show();
+				final Toast toast = Toast.makeText(getApplicationContext(), "Searching Devices", Toast.LENGTH_SHORT);
+   			    toast.show();
+   			    Handler handler = new Handler();
+   			        handler.postDelayed(new Runnable() {
+   			           @Override
+   			           public void run() {
+   			               toast.cancel(); 
+   			           }
+   			    }, 500);
 			}else if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)){
-				Toast.makeText(getApplicationContext(), "Finish Searching Devices", Toast.LENGTH_SHORT).show();
+				final Toast toast = Toast.makeText(getApplicationContext(), "Finish Searching Devices", Toast.LENGTH_SHORT);
+   			    toast.show();
+   			    Handler handler = new Handler();
+   			        handler.postDelayed(new Runnable() {
+   			           @Override
+   			           public void run() {
+   			               toast.cancel(); 
+   			           }
+   			    }, 500);
 				checkList.clear();
 			}else{
 				Toast.makeText(getApplicationContext(), "No Devices has been found", Toast.LENGTH_SHORT).show();	
@@ -166,6 +192,9 @@ public class Bluetooth extends Activity{
 				Toast.makeText(getApplicationContext(), "Showing Paired Devices", Toast.LENGTH_SHORT).show();
 			}
 			break;
+		case R.id.bluecancel:
+			startActivity(new Intent(Bluetooth.this, MainActivity.class));
+			finish();
 		default:
 			break;
 		}		     
@@ -181,4 +210,3 @@ public class Bluetooth extends Activity{
         }
     };
 }
-

@@ -31,13 +31,41 @@
                 android:text="@string/bluetooth"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
-            <Button
-                android:id="@+id/blueon"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="onClick"
-                android:text="@string/blueon"
-                android:textSize="20sp" />
+            <TableRow
+    			android:id="@+id/tableRow"
+    			android:layout_width="fill_parent"
+    			android:layout_height="fill_parent">
+    			<Button
+       				android:id="@+id/blueon"
+        			android:layout_height="wrap_content"
+        			android:text="@string/blueon" 
+        			android:layout_weight=".35" 
+        			android:layout_width="match_parent" 
+        			android:gravity="center_horizontal"
+        			android:textSize="20sp"
+        			android:onClick="onClick" />
+
+				<Button
+       				android:id="@+id/blueoff"
+        			android:layout_height="wrap_content"
+        			android:text="@string/blueoff" 
+        			android:layout_weight=".35" 
+        			android:layout_width="match_parent" 
+        			android:gravity="center_horizontal"
+        			android:textSize="20sp"
+        			android:onClick="onClick" />
+
+				<Button
+				    android:id="@+id/bluecancel"
+				    android:layout_width="match_parent"
+				    android:layout_height="wrap_content"
+				    android:layout_weight=".35"
+				    android:gravity="center_horizontal"
+				    android:onClick="onClick"
+				    android:text="@string/bluecancel"
+				    android:textSize="20sp" />
+
+			</TableRow>
 
             <Button
                 android:id="@+id/bluevisible"
@@ -62,18 +90,10 @@
                 android:text="@string/bluepair"
                 android:textSize="20sp" />
 
-            <Button
-                android:id="@+id/blueoff"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="onClick"
-                android:text="@string/blueoff"
-                android:textSize="20sp" />
-
             <ListView
                 android:id="@+id/bluepairedlist"
                 android:layout_width="match_parent"
-                android:layout_height="248dp"
+                android:layout_height="282dp"
                 android:visibility="visible"
                 tools:listitem="@android:layout/simple_list_item_1" >
 
@@ -82,13 +102,14 @@
         </LinearLayout>
     </ScrollView>
 
-    <ListView 
-        android:id="@+id/bluenewlist" 
-        android:layout_width="match_parent" 
-        android:layout_height="248dp" 
-        android:visibility="invisible" 
-        android:layout_marginTop="267dp" 
-        tools:listitem="@android:layout/simple_list_item_1">
-        </ListView>
+    <ListView
+        android:id="@+id/bluenewlist"
+        android:layout_width="match_parent"
+        android:layout_height="386dp"
+        android:layout_alignBottom="@+id/scrollmain"
+        android:layout_alignLeft="@+id/scrollmain"
+        android:visibility="invisible"
+        tools:listitem="@android:layout/simple_list_item_1" >
+    </ListView>
 
 </RelativeLayout>

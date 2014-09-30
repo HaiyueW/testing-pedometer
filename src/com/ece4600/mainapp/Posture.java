@@ -3,6 +3,9 @@ package com.ece4600.mainapp;
 import com.ece4600.mainapp.R;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -12,12 +15,44 @@ import android.widget.Button;
 //import android.widget.Toast;
 
 public class Posture extends Activity {
+	
+	private BluetoothAdapter myBluetoothAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_posture);
+		myBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+		bluetoothTest();
 		setupMessageButton();
+	}
+	
+	public void bluetoothTest(){
+		int state = myBluetoothAdapter.getState();
+		if (state == 10){
+			AlertDialog.Builder alertDialogHint = new AlertDialog.Builder(this);
+			alertDialogHint.setMessage("Bluetooth is OFF! Connection Fail!");
+			alertDialogHint.setPositiveButton("Bluetooth Setting",
+			new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					Intent i = new Intent(Posture.this,Bluetooth.class);
+					startActivity(i);
+					finish();
+				}
+			});
+			alertDialogHint.setNegativeButton("Cancel", 
+			new DialogInterface.OnClickListener(){
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.cancel();
+				}
+			});
+			AlertDialog alertDialog = alertDialogHint.create();
+			alertDialog.show();
+		}
 	}
 
 	private void setupMessageButton(){
@@ -25,7 +60,6 @@ public class Posture extends Activity {
     	messageButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				//Toast.makeText(Posture.this, "Return to profile", Toast.LENGTH_LONG).show();
 				startActivity(new Intent(Posture.this, MainActivity.class));
 				finish();
 			}
@@ -67,6 +101,8 @@ public class Posture extends Activity {
     	}
         int id = item.getItemId();
         if (id == R.id.action_settings) {
+        	startActivity(new Intent(this, Bluetooth.class));
+    		finish();
             return true;
         }
         return true; 

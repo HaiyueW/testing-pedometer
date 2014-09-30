@@ -4,6 +4,9 @@ import org.achartengine.GraphicalView;
 
 import com.ece4600.mainapp.R;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -18,11 +21,43 @@ import android.widget.LinearLayout;
 
 public class Heartrate extends Activity implements SensorEventListener {
 
+	private BluetoothAdapter myBluetoothAdapter;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_heartrate);
+		myBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+		bluetoothTest();
 		setupMessageButton();
+	}
+	
+	public void bluetoothTest(){
+		int state = myBluetoothAdapter.getState();
+		if (state == 10){
+			AlertDialog.Builder alertDialogHint = new AlertDialog.Builder(this);
+			alertDialogHint.setMessage("Bluetooth is OFF! Connection Fail!");
+			alertDialogHint.setPositiveButton("Bluetooth Setting",
+			new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					Intent i = new Intent(Heartrate.this,Bluetooth.class);
+					startActivity(i);
+					finish();
+				}
+			});
+			alertDialogHint.setNegativeButton("Cancel", 
+			new DialogInterface.OnClickListener(){
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.cancel();
+				}
+			});
+			AlertDialog alertDialog = alertDialogHint.create();
+			alertDialog.show();
+		}
 	}
 	
 	private void setupMessageButton(){
@@ -72,6 +107,8 @@ public class Heartrate extends Activity implements SensorEventListener {
     	}
         int id = item.getItemId();
         if (id == R.id.action_settings) {
+        	startActivity(new Intent(this, Bluetooth.class));
+    		finish();
             return true;
         }
         return true; 
