@@ -14,18 +14,127 @@ import android.view.View;
 import android.widget.Button;
 //import android.widget.Toast;
 
-public class Posture extends Activity {
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+
+import android.widget.TextView;
+
+
+public class Posture extends Activity implements SensorEventListener {
 	
 	private BluetoothAdapter myBluetoothAdapter;
 
+	// main code
+	
+	private SensorManager mSensorManager;
+	private Sensor mAccelerometer;
+	private TextView axisX, axisY, axisZ;
+	public TextView timenano,x_avg,threshold;
+	public dataSample[] array_10 = new dataSample[10];
+	int i = 0;
+	
 	@Override
+	
 	protected void onCreate(Bundle savedInstanceState) {
+		//bluetooth stuff starts here
+		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_posture);
 		myBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 		bluetoothTest();
 		setupMessageButton();
+		
+		//bluetooth stuff ends here;
+		
+		//main code starts here
+
+		axisX = (TextView) findViewById(R.id.acc_x);
+		axisY = (TextView) findViewById(R.id.acc_y);
+		axisZ = (TextView) findViewById(R.id.acc_z);
+		timenano = (TextView) findViewById(R.id.timenano);
+		x_avg = (TextView) findViewById(R.id.x_avg);
+		threshold = (TextView) findViewById(R.id.threshold);
+		
+		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+	// mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+	// mSensorManager.registerListener(this, mAccelerometer, 100000);
+		mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_UI);
 	}
+	@Override
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {
+	//mSensorManager.registerListener(this, mAccelerometer, 100000);
+	// Do something here if sensor accuracy changes.
+	}
+	@Override
+	public void onSensorChanged(SensorEvent event) {
+	if(event.sensor.getType()==Sensor.TYPE_ACCELEROMETER){
+		
+		TimeStamp timer_value = new TimeStamp();
+		dataSample first_data = new dataSample(event.values[0], event.values[1], event.values[2], timer_value.returntime());
+		array_10[i] = first_data;
+		axisX.setText("X: "+array_10[i].xaxis);
+		axisY.setText("Y: "+array_10[i].yaxis);
+		axisZ.setText("Z: "+array_10[i].zaxis);
+		timenano.setText("Time: "+ array_10[i].timestamp);
+		
+		i++;
+		
+		if (i == 10)
+		{
+	// insert algorithm here:
+			double average = 0;
+			double THRESHOLD_CONSTANT = 5;
+			for(int m = 0; m< 10;m++)
+			{
+				average += array_10[m].yaxis;
+			}
+				x_avg.setText("y average: "+ average/10);
+	//		
+				if (Math.abs(average)/10 < THRESHOLD_CONSTANT)
+				{
+					threshold.setText("horizontal");
+				}
+				else
+					threshold.setText("vertical");
+				
+				i = 0;
+			}	
+		}
+	}
+	@Override
+	
+	protected void onResume() {
+	super.onResume();
+	mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+	}
+	
+	@Override
+		protected void onPause() {
+	super.onPause();
+	mSensorManager.unregisterListener(this);
+	}
+	
+	
+
+	
+	//bluetooth check starts here;
+	
+	
+//	@Override
+//	protected void onCreate(Bundle savedInstanceState) {
+//		super.onCreate(savedInstanceState);
+//		setContentView(R.layout.activity_posture);
+//		myBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+//		bluetoothTest();
+//		setupMessageButton();
+//	}
+//	
+	
+	
+	
 	
 	public void bluetoothTest(){
 		int state = myBluetoothAdapter.getState();
@@ -108,3 +217,5 @@ public class Posture extends Activity {
         return true; 
 	}
 }
+
+// bluetooth enable check ends here; 

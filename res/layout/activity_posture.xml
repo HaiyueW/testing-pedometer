@@ -25,4 +25,54 @@
         android:text="@string/subpost"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
+    <TextView
+        android:id="@+id/acc_x"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/subpost"
+        android:layout_marginTop="30dp"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/x_avg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/timenano"
+        android:layout_below="@+id/timenano"
+        android:layout_marginTop="26dp"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/timenano"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/acc_z"
+        android:layout_below="@+id/acc_z"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/acc_z"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/acc_y"
+        android:layout_below="@+id/acc_y"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/acc_y"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/acc_x"
+        android:layout_below="@+id/acc_x"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/threshold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/x_avg"
+        android:layout_below="@+id/x_avg"
+        android:layout_marginTop="20dp"
+        android:text="TextView" />
+
 </RelativeLayout>
