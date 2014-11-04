@@ -14,12 +14,15 @@ import android.view.View;
 import android.widget.Button;
 //import android.widget.Toast;
 
+import android.widget.ImageView;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-
 import android.widget.TextView;
 
 
@@ -35,6 +38,13 @@ public class Posture extends Activity implements SensorEventListener {
 	public TextView timenano,x_avg,threshold;
 	public dataSample[] array_10 = new dataSample[10];
 	int i = 0;
+	public ImageView img;
+	
+	//public ImageView img = new ImageView(this);
+	
+	
+	Bitmap posture_states[] = new Bitmap[2];
+	
 	
 	@Override
 	
@@ -58,6 +68,12 @@ public class Posture extends Activity implements SensorEventListener {
 		x_avg = (TextView) findViewById(R.id.x_avg);
 		threshold = (TextView) findViewById(R.id.threshold);
 		
+		img = (ImageView) findViewById(R.id.displayIMG); 
+		
+		
+		posture_states[0] = BitmapFactory.decodeResource(getResources(), R.drawable.lyingdown1);
+		posture_states[1] = BitmapFactory.decodeResource(getResources(), R.drawable.stand1);
+		
 		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 	// mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 	// mSensorManager.registerListener(this, mAccelerometer, 100000);
@@ -72,6 +88,11 @@ public class Posture extends Activity implements SensorEventListener {
 	public void onSensorChanged(SensorEvent event) {
 	if(event.sensor.getType()==Sensor.TYPE_ACCELEROMETER){
 		
+		//ImageView myImage = (ImageView) findViewById(R.id.displayIMG);
+		
+		
+		
+		
 		TimeStamp timer_value = new TimeStamp();
 		dataSample first_data = new dataSample(event.values[0], event.values[1], event.values[2], timer_value.returntime());
 		array_10[i] = first_data;
@@ -79,6 +100,8 @@ public class Posture extends Activity implements SensorEventListener {
 		axisY.setText("Y: "+array_10[i].yaxis);
 		axisZ.setText("Z: "+array_10[i].zaxis);
 		timenano.setText("Time: "+ array_10[i].timestamp);
+		
+		
 		
 		i++;
 		
@@ -96,11 +119,27 @@ public class Posture extends Activity implements SensorEventListener {
 				if (Math.abs(average)/10 < THRESHOLD_CONSTANT)
 				{
 					threshold.setText("horizontal");
+				
+			//		img.setImageResource(0);
+			//		img.setImageResource(R.drawable.lyingdown1);
+			//		img.destroyDrawingCache();
+			
+												
+					img.setImageBitmap(posture_states[0]);
+					
 				}
 				else
+				{	
 					threshold.setText("vertical");
-				
+			//		img = (ImageView) findViewById(R.id.displayIMG);
+					//img.setImageResource(0);
+			//		img.setImageResource(R.drawable.stand1);
+			//		img.destroyDrawingCache();
+				    img.setImageBitmap(posture_states[1]);
+				}
+				    
 				i = 0;
+				
 			}	
 		}
 	}

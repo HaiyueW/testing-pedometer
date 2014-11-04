@@ -75,4 +75,12 @@
         android:layout_marginTop="20dp"
         android:text="TextView" />
 
+    <ImageView
+        android:id="@+id/displayIMG"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/threshold"
+        android:layout_centerVertical="true"
+        android:scaleType="fitCenter" />
+
 </RelativeLayout>
