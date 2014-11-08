@@ -68,26 +68,10 @@
 			</TableRow>
 
             <Button
-                android:id="@+id/bluevisible"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="onClick"
-                android:text="@string/bluevisible"
-                android:textSize="20sp" />
-
-            <Button
                 android:id="@+id/bluesearch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/bluesearch"
-                android:textSize="20sp" />
-            
-            <Button
-                android:id="@+id/bluepair"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="onClick"
-                android:text="@string/bluepair"
                 android:textSize="20sp" />
 
             <ListView
