@@ -226,6 +226,7 @@ public class Bluetooth extends Activity{
         							}
         							else{
         								Log.d("DEBUG", "Connection successful");
+        								
         							}
         						}
         						
@@ -298,7 +299,8 @@ public class Bluetooth extends Activity{
             	  Bluetooth.this.runOnUiThread(new Runnable() {
     		          public void run() {
     		              Toast.makeText(Bluetooth.this, "Successfully enabled DEVICE 1 accelerometers", Toast.LENGTH_SHORT).show();
-
+    		              mBleWrapper.stopScanning();
+						  mBleWrapper2.startScanning();
     		          }
     		      });
                 break;
@@ -321,7 +323,9 @@ public class Bluetooth extends Activity{
             super.uiFailedWrite(gatt, device, service, ch, description);
             //Log.d(LOGTAG, "DEVICE 1 uiFailedWrite");
         }
-        
+        //*******************	
+        //WHERE YOU CAN RETRIEVE NEW ACCLEROMETER VALUES
+        //******************* 
         @Override
         public void uiNewValueForCharacteristic(BluetoothGatt gatt,
                                                 BluetoothDevice device, 
@@ -347,8 +351,10 @@ public class Bluetooth extends Activity{
             	      handler.post(new Runnable(){
             				@Override
             				public void run() {
+            					//Retrieve data here:
                 				dataArray data = new dataArray(vector[0], vector[1], vector[2]);
                   				array_2d[0] = data;
+                  				//Call function(s)
             				}
             	        	
             	         });
@@ -423,6 +429,7 @@ public class Bluetooth extends Activity{
             							}
             							else{
             								Log.d("DEBUG", "Connection successful");
+            								
             							}
             						}
             						
@@ -490,7 +497,7 @@ public class Bluetooth extends Activity{
                   	  Bluetooth.this.runOnUiThread(new Runnable() {
           		          public void run() {
           		              Toast.makeText(Bluetooth.this, "Successfully enabled DEVICE 2 accelerometers", Toast.LENGTH_SHORT).show();
-
+          		              mBleWrapper2.stopScanning();
           		          }
           		      });
                       break;
@@ -537,8 +544,10 @@ public class Bluetooth extends Activity{
                   	      handler.post(new Runnable(){
                   				@Override
                   				public void run() {
+                  					//Get data here:
                       				dataArray data = new dataArray(vector[0], vector[1], vector[2]);
-                      				array_2d[1] = data;
+                      				array_2d[1] = data; 
+                      				//call a function:
                   				}
                   	         });
                   	break;
