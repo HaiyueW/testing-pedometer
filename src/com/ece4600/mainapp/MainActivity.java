@@ -1,17 +1,39 @@
 package com.ece4600.mainapp;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 
 public class MainActivity extends Activity {
+	public static final String RECEIVE_JSON = "com.your.ece4600.RECEIVE_JSON";
 
+	private BroadcastReceiver broadcastRx = new BroadcastReceiver() {
+	    @Override
+	    public void onReceive(Context context, Intent intent) {
+	        //if(intent.getAction().equals(RECEIVE_JSON)) {
+	    	int datapassed = intent.getIntExtra("DATAPASSED", 0);
+	    	  
+	    	  Toast.makeText(MainActivity.this,
+	    	    "Triggered by Service!\n"
+	    	    + "Data passed: " + String.valueOf(datapassed),
+	    	    Toast.LENGTH_LONG).show();
+				//Log.i("MainActivity", msg);
+	        //}
+	    }
+	};
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,6 +44,16 @@ public class MainActivity extends Activity {
         setupMessageButton4();
         //Intent Login_window = new Intent(this, Login.class); // adds the log in window here
         //startActivity(Login_window);
+        
+        //LocalBroadcastManager bManager = LocalBroadcastManager.getInstance(this);
+        //IntentFilter intentFilter = new IntentFilter();
+        //intentFilter.addAction(bleService.MY_ACTION);
+        //registerReceiver(broadcastRx, intentFilter);
+        
+        //Start our own service
+       // Intent intent = new Intent(MainActivity.this, bleService.class);
+        //startService(intent);
+        
     }
 
     private void setupMessageButton1(){

@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,8 +27,9 @@ import android.hardware.SensorManager;
 import android.widget.TextView;
 
 
-public class Posture extends Activity implements SensorEventListener {
+public class Posture extends Activity implements SensorEventListener{
 	
+	private SharedPreferences mSharedPrefs;
 	private BluetoothAdapter myBluetoothAdapter;
 
 	// main code
@@ -58,6 +60,13 @@ public class Posture extends Activity implements SensorEventListener {
 		setupMessageButton();
 		
 		//bluetooth stuff ends here;
+		
+		
+
+		
+		
+		
+		//BROADCAST RECIEVER ENDS HERE
 		
 		//main code starts here
 
