@@ -7,6 +7,7 @@ public class dataSample {
 	public double zaxis;
 	public long timestamp;
 	
+	
 	public dataSample(double Xvalue, double Yvalue, double Zvalue, long Time_stamp) {
 	
 		xaxis = Xvalue;

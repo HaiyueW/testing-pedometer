@@ -5,14 +5,19 @@ import com.ece4600.mainapp.R;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 //import android.widget.Toast;
 
 import android.widget.ImageView;
@@ -52,24 +57,15 @@ public class Posture extends Activity implements SensorEventListener{
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		//bluetooth stuff starts here
-		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_posture);
 		myBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 		bluetoothTest();
 		setupMessageButton();
-		
 		//bluetooth stuff ends here;
-		
-		
 
-		
-		
-		
-		//BROADCAST RECIEVER ENDS HERE
 		
 		//main code starts here
-
 		axisX = (TextView) findViewById(R.id.acc_x);
 		axisY = (TextView) findViewById(R.id.acc_y);
 		axisZ = (TextView) findViewById(R.id.acc_z);
@@ -83,10 +79,12 @@ public class Posture extends Activity implements SensorEventListener{
 		posture_states[0] = BitmapFactory.decodeResource(getResources(), R.drawable.lyingdown1);
 		posture_states[1] = BitmapFactory.decodeResource(getResources(), R.drawable.stand1);
 		
-		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-	// mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-	// mSensorManager.registerListener(this, mAccelerometer, 100000);
-		mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_UI);
+	
+		
+        LocalBroadcastManager bManager = LocalBroadcastManager.getInstance(this);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("POSTURE_ACTION");
+        registerReceiver(broadcastRx, intentFilter);
 	}
 	@Override
 	public void onAccuracyChanged(Sensor sensor, int accuracy) {
@@ -103,7 +101,7 @@ public class Posture extends Activity implements SensorEventListener{
 		
 		
 		TimeStamp timer_value = new TimeStamp();
-		dataSample first_data = new dataSample(event.values[0], event.values[1], event.values[2], timer_value.returntime());
+		dataSample first_data = new dataSample(0.0f, 0.0f, 0.0f, timer_value.returntime());
 		array_10[i] = first_data;
 		axisX.setText("X: "+array_10[i].xaxis);
 		axisY.setText("Y: "+array_10[i].yaxis);
@@ -156,13 +154,13 @@ public class Posture extends Activity implements SensorEventListener{
 	
 	protected void onResume() {
 	super.onResume();
-	mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+	//mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
 	}
 	
 	@Override
 		protected void onPause() {
 	super.onPause();
-	mSensorManager.unregisterListener(this);
+	//mSensorManager.unregisterListener(this);
 	}
 	
 	
@@ -264,6 +262,24 @@ public class Posture extends Activity implements SensorEventListener{
         }
         return true; 
 	}
+	
+	
+// Broadcast reciever
+// Recieves updates from postureService
+	
+	private BroadcastReceiver broadcastRx = new BroadcastReceiver() {
+	    @Override
+	    public void onReceive(Context context, Intent intent) {
+	        if(intent.getAction().equals("POSTURE_ACTION")) {
+	        	String posture = intent.getStringExtra("POSTURE");
+	        	Log.v("PostureActivity",posture);
+	        }
+	    }
+	};
+	
+	
+	
+	
 }
 
-// bluetooth enable check ends here; 
+	

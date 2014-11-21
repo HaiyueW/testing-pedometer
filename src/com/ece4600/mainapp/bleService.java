@@ -93,15 +93,40 @@ public class bleService extends Service{
 		mSensor2 = mSensorState.DISCONNECTED;
 		MyThread myThread = new MyThread();
 		myThread.start();
+		
+		//handler.postDelayed(test, 100);
+		
+		 
+		 
 	    return  super.onStartCommand(intent, flags, startId);
 	  }
+	
+	
+	private Runnable test = new Runnable() {
+		   @Override
+		   public void run() {
+
+			  
+			  Intent i = new Intent(bleService.this, PostureService.class);
+				 i.putExtra("XVal1", 1.0f);
+				 i.putExtra("YVal1", 2.0f);
+				 i.putExtra("ZVal1", 3.0f);
+				 startService(i);
+				 handler.postDelayed(this, 100);
+
+		   }
+		};
+	
+	
 	@Override
 	public void onCreate(){
 		
 	}
 	@Override
 	public void onDestroy(){
-		
+		mConnectedGatt1.disconnect();
+		mConnectedGatt2.disconnect();
+		mBluetoothAdapter.stopLeScan(mLeScanCallback);
 	}
 	 
 	/**
@@ -160,6 +185,7 @@ final class MyThread extends Thread{
  		 }	
 }
     
+
 //--------------------------	
 //	Start Scanning for devices
 //--------------------------
@@ -168,6 +194,7 @@ final class MyThread extends Thread{
 	 mBluetoothAdapter.startLeScan(mLeScanCallback);
 	 else 
 	 mBluetoothAdapter.startLeScan(mLeScanCallback2);
+	 
 	 Log.i(DEBUG, "start scan");
 	 Handler h = new Handler(Looper.getMainLooper());
 	 h.postDelayed(mStopScanRunnable, SCAN_PERIOD);
@@ -431,15 +458,28 @@ private void poll(){
 private Runnable runnable = new Runnable() {
 	   @Override
 	   public void run() {
+		  
 		  readDevice1();
 		  readDevice2();
 		  handler.postDelayed(this, 100);
 	       
+		  if (mSensor1 == mSensorState.CONNECTED && mSensor2 == mSensorState.CONNECTED){
           String data1 = "D1," + array_2d[0].xaxis +  "," + array_2d[0].yaxis +  "," + array_2d[0].zaxis;
           String data2 = ",D2," + array_2d[1].xaxis +  "," + array_2d[1].yaxis +  "," + array_2d[1].zaxis;
           String data = data1 + data2;
-          
           Log.i(DEBUG, data);
+          
+          Intent i = new Intent(bleService.this, PostureService.class);
+		  i.putExtra("XVal1", (float) array_2d[0].xaxis);
+		  i.putExtra("YVal1",(float) array_2d[0].yaxis);
+		  i.putExtra("ZVal1", (float) array_2d[0].zaxis);
+		  startService(i);
+		  
+		  }
+	   else{
+		   handler.removeCallbacks(this);
+		   stopScan();
+		   stopSelf();
 	   }
 	};
 
@@ -459,5 +499,8 @@ private void readDevice2(){
 	mConnectedGatt2.readCharacteristic(c);
 	}
 }
+};
+
+
 }
 
