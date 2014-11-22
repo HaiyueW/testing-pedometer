@@ -8,20 +8,25 @@ import android.util.Log;
 import android.widget.Toast;
 
 public class PostureService extends IntentService{
-	public static dataArrayFloat[] array_10 = new dataArrayFloat[10];
+	public static dataArrayFloat[] array_10 = new dataArrayFloat[11];
 	public static int i;
 	public static String postureState, newPosture;
 	public static dataArrayFloat[] array_2d = new dataArrayFloat[2];
-	private Thread pThread;
-	
+	private MyThread pThread;
+	private static boolean running;
 
 	public PostureService() {
 		super("PostureService");
 		// TODO Auto-generated constructor stub
 		i = 0;
+		pThread = new MyThread();
 		postureState = "VERTICAL";
 	}
 
+	
+	//-----------------------------------
+	// Where data is received
+	//-----------------------------------
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		float xValue1 = intent.getFloatExtra("XVal1", 0.0f);
@@ -32,57 +37,24 @@ public class PostureService extends IntentService{
 		float yValue2 = intent.getFloatExtra("YVal2", 0.0f);
 		float zValue2 = intent.getFloatExtra("ZVal2", 0.0f);
 		
-		
-		
-		/*dataArrayFloat data = new dataArrayFloat(xValue1, yValue1, zValue1);
-		array_2d[0] = data;
-		//pThread = new MyThread();
-	    //pThread.start();
-	    
-		if (!newPosture.equals(postureState)){
-			Log.v("PostureService", newPosture);
-			Intent i = new Intent(PostureService.this, Posture.class);
-			i.setAction("POSTURE_ACTION");
-			i.putExtra("POSTURE", newPosture);
-			sendBroadcast(intent);
-		}*/
-		
-		/*
-		TimeStamp timer_value = new TimeStamp();
-		dataSample first_data = new dataSample(xValue1, yValue1, zValue1, timer_value.returntime());
-		array_10[i] = first_data;
+		dataArrayFloat data = new dataArrayFloat(xValue1, yValue1, zValue1);
+		array_10[i] = data;
 		
 		i++;
 		
-		if (i == 10)
+		if (i == 11) //i = 11 to get rid of null pointer exception
 		{
-			// insert algorithm here:
-			double average = 0;
-			double THRESHOLD_CONSTANT = 5;
-			for(int m = 0; m< 10;m++)
-			{
-				average += array_10[m].yaxis;
-			}
-				
-				if (Math.abs(average)/10 < THRESHOLD_CONSTANT)
-				{
-					postureState = "HORIZONTAL";
-					
-				}
-				else
-				{	
-					postureState = "VERTICAL";
-				}
-				    
-				i = 0;
-				
-				//Broadcast posture update
-				broadcastUpdate(postureState);
-			}	*/
+			i = 0;
+			running =true;
+			pThread.run();
+		}
 		
-	}
+	}// On Handle Intent End
 	
-	/*public static void broadcastUpdate(String results){
+	
+	
+	
+	private void broadcastUpdate(String results){
 		Log.v("PostureService", results);
 
 		Intent intent = new Intent(this, Posture.class);
@@ -90,45 +62,50 @@ public class PostureService extends IntentService{
 		intent.putExtra("POSTURE", results);
 		sendBroadcast(intent);
 		
-	}*/
+	}
 
-	static public class MyThread extends Thread{
+	private class MyThread implements Runnable{
 		 
 		
 		 @Override
 		 public void run() {
 			 
-			 
-			 array_10[i] = array_2d[0];
-				
-				i++;
-				
-				if (i == 10)
-				{
+			 //android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+			 while(running){	
+		
 					// insert algorithm here:
-					double average = 0;
-					double THRESHOLD_CONSTANT = 5;
-					for(int m = 0; m< 10;m++)
-					{
+					float average = 0;
+					float THRESHOLD_CONSTANT = (float) -0.85;
+					
+					for(int m = 1; m< 11;m++)
 						average += array_10[m].yaxis;
-					}
 						
-						if (Math.abs(average)/10 < THRESHOLD_CONSTANT)
-						{
-							newPosture = "HORIZONTAL";
-							
-						}
-						else
-						{	
-							newPosture = "VERTICAL";
-						}
+						
+					if ( (average/10) < THRESHOLD_CONSTANT)
+						newPosture = "VERTICAL";
+					else
+						newPosture = "HORIZONTAL";
+						
 						    
-						i = 0;
+					i = 0;
 
-					}	
-			 
-			 
-		 }
+						
+					    
+					if (!newPosture.equals(postureState)){
+						// Where data is sent to posture class
+						// issue: sometimes this is not sent?
+						Log.v("PostureService", newPosture);
+						postureState = newPosture;
+						Intent i = new Intent(PostureService.this,Posture.class);
+						i.setAction("POSTURE_ACTION");
+						i.putExtra("POSTURE", newPosture);
+						sendBroadcast(i);
+					}
+					
+				}	
+			running = false; 
+		 	
+	}
 		 
 	}
 	

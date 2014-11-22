@@ -155,11 +155,16 @@ public class Posture extends Activity implements SensorEventListener{
 	protected void onResume() {
 	super.onResume();
 	//mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+    IntentFilter intentFilter = new IntentFilter();
+    intentFilter.addAction("POSTURE_ACTION");
+    registerReceiver(broadcastRx, intentFilter);
 	}
 	
 	@Override
 		protected void onPause() {
 	super.onPause();
+	
+	unregisterReceiver(broadcastRx);
 	//mSensorManager.unregisterListener(this);
 	}
 	
@@ -270,10 +275,10 @@ public class Posture extends Activity implements SensorEventListener{
 	private BroadcastReceiver broadcastRx = new BroadcastReceiver() {
 	    @Override
 	    public void onReceive(Context context, Intent intent) {
-	        if(intent.getAction().equals("POSTURE_ACTION")) {
+	        
 	        	String posture = intent.getStringExtra("POSTURE");
 	        	Log.v("PostureActivity",posture);
-	        }
+	        
 	    }
 	};
 	

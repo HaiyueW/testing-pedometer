@@ -325,7 +325,10 @@ private BluetoothGattCallback mGattCallback1 = new BluetoothGattCallback() {
 		});
 		
 		//readSensor(gatt);
-		startScan();
+		
+		//startScan();
+		poll1();
+		stopScan();
     }
 	/* Read a sensor:*/
 	public void readSensor(BluetoothGatt gatt){
@@ -449,11 +452,50 @@ private BluetoothGattCallback mGattCallback2 = new BluetoothGattCallback() {
 	}
 }; //End of mGattCallback2
 
+
+
+
 //POLLING
 private void poll(){
-	handler.postDelayed(runnable, 100);
-	
+	handler.postDelayed(runnable, 100);	
 }
+
+
+private void poll1(){
+	handler.postDelayed(runnable1, 100);	
+}
+
+
+
+private Runnable runnable1 = new Runnable() {
+	   @Override
+	   public void run() {
+		  
+		  readDevice1();
+		  
+		  
+		  handler.postDelayed(this, 100);
+		  if (mSensor1 == mSensorState.CONNECTED){
+			  String data1 = "D1," + array_2d[0].xaxis +  "," + array_2d[0].yaxis +  "," + array_2d[0].zaxis;
+			  Log.i(DEBUG, data1);
+       
+			  Intent i = new Intent(bleService.this, PostureService.class);
+			  i.putExtra("XVal1", (float) array_2d[0].xaxis);
+			  i.putExtra("YVal1",(float) array_2d[0].yaxis);
+			  i.putExtra("ZVal1", (float) array_2d[0].zaxis);
+			  startService(i);
+		  }
+	   else{
+		   handler.removeCallbacks(this);
+		   stopScan();
+		   stopSelf();
+	   }
+		  
+	   }};
+
+	   
+	   
+	   
 
 private Runnable runnable = new Runnable() {
 	   @Override
@@ -482,6 +524,9 @@ private Runnable runnable = new Runnable() {
 		   stopSelf();
 	   }
 	};
+};
+
+
 
 
 private void readDevice1(){
@@ -492,6 +537,9 @@ private void readDevice1(){
 	}
 }
 
+
+
+
 private void readDevice2(){
 	if (mSensor2 == mSensorState.CONNECTED){
 	BluetoothGattCharacteristic c;
@@ -499,8 +547,15 @@ private void readDevice2(){
 	mConnectedGatt2.readCharacteristic(c);
 	}
 }
+
+
+
+
+
+
 };
 
 
-}
+
+
 
