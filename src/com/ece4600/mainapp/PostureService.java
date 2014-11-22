@@ -17,6 +17,7 @@ public class PostureService extends IntentService{
 
 	public PostureService() {
 		super("PostureService");
+		
 		// TODO Auto-generated constructor stub
 		i = 0;
 		pThread = new MyThread();
@@ -39,7 +40,7 @@ public class PostureService extends IntentService{
 		
 		dataArrayFloat data = new dataArrayFloat(xValue1, yValue1, zValue1);
 		array_10[i] = data;
-		
+		Log.v("PostureService", "Recieved data");
 		i++;
 		
 		if (i == 11) //i = 11 to get rid of null pointer exception
@@ -100,12 +101,22 @@ public class PostureService extends IntentService{
 						i.setAction("POSTURE_ACTION");
 						i.putExtra("POSTURE", newPosture);
 						sendBroadcast(i);
+						Handler h = new Handler(Looper.getMainLooper());
+						h.post(new Runnable(){
+							@Override
+							public void run(){
+								//Log.i(DEBUG, "Connection successful, Getting Services");
+								Toast.makeText( PostureService.this, postureState, Toast.LENGTH_SHORT).show();
+							}
+						});
 					}
 					
 				}	
 			running = false; 
 		 	
+			
 	}
+		  
 		 
 	}
 	
