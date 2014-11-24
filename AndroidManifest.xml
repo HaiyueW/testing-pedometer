@@ -22,13 +22,9 @@
         android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen" >
         
         
-        <service
-        android:name="bleService"
-        ></service>
-        <service
-        android:name="PostureService"
-        ></service>
-        
+        <service android:name="bleService"></service>
+        <service android:name="PostureService" ></service>
+        <service android:name="PostureService2" ></service>
         
         <activity
             android:name=".Splash"
