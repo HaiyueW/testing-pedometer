@@ -503,6 +503,11 @@ private Runnable runnable1 = new Runnable() {
 			  i.putExtra("XVal1", (float) array_2d[0].xaxis);
 			  i.putExtra("YVal1",(float) array_2d[0].yaxis);
 			  i.putExtra("ZVal1", (float) array_2d[0].zaxis);
+			  
+			  i.putExtra("XVal2", (float) array_2d[1].xaxis);
+			  i.putExtra("YVal2",(float) array_2d[1].yaxis);
+			  i.putExtra("ZVal2", (float) array_2d[1].zaxis);
+			  
 			  startService(i);
 		  }
 	   else{
@@ -535,6 +540,10 @@ private Runnable runnable = new Runnable() {
 		  i.putExtra("XVal1", (float) array_2d[0].xaxis);
 		  i.putExtra("YVal1",(float) array_2d[0].yaxis);
 		  i.putExtra("ZVal1", (float) array_2d[0].zaxis);
+		  
+		  i.putExtra("XVal2", (float) array_2d[1].xaxis);
+		  i.putExtra("YVal2",(float) array_2d[1].yaxis);
+		  i.putExtra("ZVal2", (float) array_2d[1].zaxis);
 		  startService(i);
 		  
 		  

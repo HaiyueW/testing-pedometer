@@ -10,12 +10,13 @@ import android.util.Log;
 import android.widget.Toast;
 
 public class PostureService extends Service{
-	public static dataArrayFloat[] array_10 = new dataArrayFloat[11];
+	public static dataArrayFloat[] array_10_D1 = new dataArrayFloat[11];
+	public static dataArrayFloat[] array_10_D2 = new dataArrayFloat[11];
 	public static int i;
 	public static String postureState, newPosture;
 	public static dataArrayFloat[] array_2d = new dataArrayFloat[2];
 	
-	private static float average = 0;
+	private static float avgX1, avgY1, avgZ1, avgX2, avgY2, avgZ2;
 	private static float THRESHOLD_CONSTANT = (float) 0.85;
 	
 	@Override
@@ -49,7 +50,11 @@ public class PostureService extends Service{
 		
 
 		dataArrayFloat data = new dataArrayFloat(xValue1, yValue1, zValue1);
-		array_10[i] = data;
+		array_10_D1[i] = data;
+		
+		dataArrayFloat data2 = new dataArrayFloat(xValue2, yValue2, zValue2);
+		array_10_D2[i] = data2;
+		
 		Log.v("PostureService", "Recieved data");
 		
 		i++;
@@ -74,26 +79,56 @@ public class PostureService extends Service{
 	
 	
 	private void calculatePosture(){
-		average = 0;
-		for(int m = 1; m< 11;m++)
-			average += array_10[m].yaxis;
+		avgX1 = 0;
+		avgY1 = 0;
+		avgZ1 = 0;
+		
+		avgX2 = 0;
+		avgY2 = 0;
+		avgZ2 = 0;
+		
+		for(int m = 1; m< 11;m++){
+			avgX1 +=  array_10_D1[m].xaxis;
+			avgY1 += array_10_D1[m].yaxis;
+			avgZ1 +=  array_10_D1[m].zaxis;
 			
+			avgX2 +=  array_10_D2[m].xaxis;
+			avgY2 += array_10_D2[m].yaxis;
+			avgZ2 +=  array_10_D2[m].zaxis;
 			
-		if ( Math.abs(average/10) > THRESHOLD_CONSTANT )
+		}
+			
+		Handler hAvg = new Handler(Looper.getMainLooper());
+		hAvg.post(new Runnable(){
+			@Override
+			public void run(){
+				Intent i = new Intent("POSTURE_EVENT");
+				
+				i.putExtra("avgX1", avgX1/10);
+				i.putExtra("avgY1", avgY1/10);
+				i.putExtra("avgZ1", avgZ1/10);
+				
+				i.putExtra("avgX2", avgX2/10);
+				i.putExtra("avgY2", avgY2/10);
+				i.putExtra("avgZ2", avgZ2/10);
+				
+				sendBroadcast(i);
+			}
+		});
+			
+		if ( Math.abs(avgY1/10) > THRESHOLD_CONSTANT )
 			newPosture = "VERTICAL";
 		else
 			newPosture = "HORIZONTAL";
 		    
+		
+		
 		if (!newPosture.equals(postureState)){
 			// Where data is sent to posture class
-			// issue: sometimes this is not sent?
+		
 			Log.e("PostureService", newPosture);
 			postureState = newPosture;
-			//Intent i = new Intent(PostureService.this,Posture.class);
-			//Intent i = new Intent("POSTURE_EVENT");
-			//i.setAction("POSTURE_ACTION");
-			//i.putExtra("POSTURE", newPosture);
-			//sendBroadcast(i);
+
 			
 			Handler h = new Handler(Looper.getMainLooper());
 			h.post(new Runnable(){
@@ -102,8 +137,8 @@ public class PostureService extends Service{
 					//Log.i(DEBUG, "Connection successful, Getting Services");
 					Toast.makeText( PostureService.this, postureState, Toast.LENGTH_SHORT).show();
 					Intent i = new Intent("POSTURE_EVENT");
-					//i.setAction("POSTURE_ACTION");
 					i.putExtra("POSTURE", newPosture);
+					
 					sendBroadcast(i);
 				}
 			});

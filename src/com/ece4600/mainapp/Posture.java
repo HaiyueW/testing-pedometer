@@ -1,6 +1,5 @@
 package com.ece4600.mainapp;
 
-import com.ece4600.mainapp.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -32,7 +31,7 @@ import android.hardware.SensorManager;
 import android.widget.TextView;
 
 
-public class Posture extends Activity implements SensorEventListener{
+public class Posture extends Activity {
 	
 	private SharedPreferences mSharedPrefs;
 	private BluetoothAdapter myBluetoothAdapter;
@@ -41,7 +40,7 @@ public class Posture extends Activity implements SensorEventListener{
 	
 	private SensorManager mSensorManager;
 	private Sensor mAccelerometer;
-	private TextView axisX, axisY, axisZ;
+	private TextView axisX1, axisY1, axisZ1,axisX2, axisY2, axisZ2;
 	public TextView timenano,x_avg,threshold;
 	public dataSample[] array_10 = new dataSample[10];
 	int i = 0;
@@ -66,12 +65,13 @@ public class Posture extends Activity implements SensorEventListener{
 
 		
 		//main code starts here
-		axisX = (TextView) findViewById(R.id.acc_x);
-		axisY = (TextView) findViewById(R.id.acc_y);
-		axisZ = (TextView) findViewById(R.id.acc_z);
-		timenano = (TextView) findViewById(R.id.timenano);
-		x_avg = (TextView) findViewById(R.id.x_avg);
-		threshold = (TextView) findViewById(R.id.threshold);
+		axisX1 = (TextView) findViewById(R.id.acc_x1);
+		axisY1 = (TextView) findViewById(R.id.acc_y1);
+		axisZ1 = (TextView) findViewById(R.id.acc_z1);
+		
+		axisX2 = (TextView) findViewById(R.id.acc_x2);
+		axisY2 = (TextView) findViewById(R.id.acc_y2);
+		axisZ2 = (TextView) findViewById(R.id.acc_z2);
 		
 		img = (ImageView) findViewById(R.id.displayIMG); 
 		
@@ -80,11 +80,7 @@ public class Posture extends Activity implements SensorEventListener{
 		posture_states[1] = BitmapFactory.decodeResource(getResources(), R.drawable.stand1);
 		
 	
-		
-		
-        //LocalBroadcastManager bManager = LocalBroadcastManager.getInstance(this);
         IntentFilter intentFilter = new IntentFilter("POSTURE_EVENT");
-        //intentFilter.addAction("POSTURE_ACTION");
         registerReceiver(broadcastRx, intentFilter);
 	}
 	
@@ -96,108 +92,27 @@ public class Posture extends Activity implements SensorEventListener{
 	  //un-register BroadcastReceiver
 	  unregisterReceiver(broadcastRx);
 	 }
-	@Override
-	public void onAccuracyChanged(Sensor sensor, int accuracy) {
-	//mSensorManager.registerListener(this, mAccelerometer, 100000);
-	// Do something here if sensor accuracy changes.
-	}
-	@Override
-	public void onSensorChanged(SensorEvent event) {
-	if(event.sensor.getType()==Sensor.TYPE_ACCELEROMETER){
-		
-		//ImageView myImage = (ImageView) findViewById(R.id.displayIMG);
-		
-		
-		
-		
-		TimeStamp timer_value = new TimeStamp();
-		dataSample first_data = new dataSample(0.0f, 0.0f, 0.0f, timer_value.returntime());
-		array_10[i] = first_data;
-		axisX.setText("X: "+array_10[i].xaxis);
-		axisY.setText("Y: "+array_10[i].yaxis);
-		axisZ.setText("Z: "+array_10[i].zaxis);
-		timenano.setText("Time: "+ array_10[i].timestamp);
-		
-		
-		
-		i++;
-		
-		if (i == 10)
-		{
-	// insert algorithm here:
-			double average = 0;
-			double THRESHOLD_CONSTANT = 5;
-			for(int m = 0; m< 10;m++)
-			{
-				average += array_10[m].yaxis;
-			}
-				x_avg.setText("y average: "+ average/10);
-	//		
-				if (Math.abs(average)/10 < THRESHOLD_CONSTANT)
-				{
-					threshold.setText("horizontal");
-				
-			//		img.setImageResource(0);
-			//		img.setImageResource(R.drawable.lyingdown1);
-			//		img.destroyDrawingCache();
-			
-												
-					img.setImageBitmap(posture_states[0]);
-					
-				}
-				else
-				{	
-					threshold.setText("vertical");
-			//		img = (ImageView) findViewById(R.id.displayIMG);
-					//img.setImageResource(0);
-			//		img.setImageResource(R.drawable.stand1);
-			//		img.destroyDrawingCache();
-				    img.setImageBitmap(posture_states[1]);
-				}
-				    
-				i = 0;
-				
-			}	
-		}
-	}
+
+	
+
 	@Override
 	
 	protected void onResume() {
 	super.onResume();
-	//mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+	
     IntentFilter intentFilter = new IntentFilter();
     intentFilter.addAction("POSTURE_ACTION");
     registerReceiver(broadcastRx, intentFilter);
 	}
 	
 	@Override
-		protected void onPause() {
+	protected void onPause() {
 	super.onPause();
 
-    LocalBroadcastManager bManager = LocalBroadcastManager.getInstance(this);
-    //intentFilter.addAction("POSTURE_ACTION");   
+    LocalBroadcastManager bManager = LocalBroadcastManager.getInstance(this);   
     bManager.unregisterReceiver(broadcastRx);
-	//mSensorManager.unregisterListener(this);
 	}
-	
-	
 
-	
-	//bluetooth check starts here;
-	
-	
-//	@Override
-//	protected void onCreate(Bundle savedInstanceState) {
-//		super.onCreate(savedInstanceState);
-//		setContentView(R.layout.activity_posture);
-//		myBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-//		bluetoothTest();
-//		setupMessageButton();
-//	}
-//	
-	
-	
-	
 	
 	public void bluetoothTest(){
 		int state = myBluetoothAdapter.getState();
@@ -291,14 +206,34 @@ public class Posture extends Activity implements SensorEventListener{
 	    public void onReceive(Context context, Intent intent) {
 	        
 	        	String posture = intent.getStringExtra("POSTURE");
-	        	Log.v("PostureActivity",posture);
+	        	float avgX1  = intent.getFloatExtra("avgX1", 0.0f);
+	        	float avgY1  = intent.getFloatExtra("avgY1", 0.0f);
+	        	float avgZ1  = intent.getFloatExtra("avgZ1", 0.0f);
 	        	
+	        	float avgX2  = intent.getFloatExtra("avgX2", 0.0f);
+	        	float avgY2  = intent.getFloatExtra("avgY2", 0.0f);
+	        	float avgZ2  = intent.getFloatExtra("avgZ2", 0.0f);
+	        	
+	        	
+	        	
+	        	if (avgX1 != 0.0f){
+	    		axisX1.setText("X: "+avgX1);
+	    		axisY1.setText("Y: "+avgY1);
+	    		axisZ1.setText("Z: "+avgZ1);
+	    		
+	    		axisX2.setText("X: "+avgX2);
+	    		axisY2.setText("Y: "+avgY2);
+	    		axisZ2.setText("Z: "+avgZ2);
+	        	}
+	        	
+	        	if (posture != null){
 	        	if (posture.equals("VERTICAL"))
 	        	{
 	        		img.setImageBitmap(posture_states[1]);
 	        	}
-	        	else{
+	        	else if(posture.equals("HORIZONTAL")){
 	        		img.setImageBitmap(posture_states[0]);
+	        	}
 	        	}
 	        
 	    }
