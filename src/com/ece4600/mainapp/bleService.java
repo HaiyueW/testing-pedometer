@@ -25,6 +25,7 @@ public class bleService extends Service{
     private final static String TAG = bleService.class.getSimpleName();
     private final static String DEBUG = "DEBUG";
 	private BluetoothManager mBluetoothManager;
+	
 	protected BluetoothAdapter mBluetoothAdapter;
 	private BluetoothGatt mConnectedGatt1, mConnectedGatt2;
 	
@@ -77,7 +78,7 @@ public class bleService extends Service{
 	    UUID_KEY_DATA = fromString("0000ffe1-0000-1000-8000-00805f9b34fb"),
 	    UUID_CCC_DESC = fromString("00002902-0000-1000-8000-00805f9b34fb");
     
-	final static String MY_ACTION = "MY_ACTION";
+	final static String MY_ACTION = "MY_ACTION"; // what does this do?
 	
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -89,9 +90,9 @@ public class bleService extends Service{
 	  public int onStartCommand(Intent intent, int flags, int startId) {
 	    //TODO do something useful
 		initialize();
-		mSensor1 = mSensorState.DISCONNECTED;
+		mSensor1 = mSensorState.DISCONNECTED; //  set the sensor indicator value to disconnected
 		mSensor2 = mSensorState.DISCONNECTED;
-		MyThread myThread = new MyThread();
+		MyThread myThread = new MyThread(); // creating a new thread?
 		myThread.start();
 		
 		//handler.postDelayed(test, 100);
@@ -102,20 +103,20 @@ public class bleService extends Service{
 	  }
 	
 	
-	private Runnable test = new Runnable() {
-		   @Override
-		   public void run() {
-
-			  
-			  Intent i = new Intent(bleService.this, PostureService.class);
-				 i.putExtra("XVal1", 1.0f);
-				 i.putExtra("YVal1", 2.0f);
-				 i.putExtra("ZVal1", 3.0f);
-				 startService(i);
-				 handler.postDelayed(this, 100);
-
-		   }
-		};
+//	private Runnable test = new Runnable() {
+//		   @Override
+//		   public void run() {
+//
+//			  
+//			  Intent i = new Intent(bleService.this, PostureService.class);
+//				 i.putExtra("XVal1", 1.0f);
+//				 i.putExtra("YVal1", 2.0f);
+//				 i.putExtra("ZVal1", 3.0f);
+//				 startService(i);
+//				 handler.postDelayed(this, 100);
+//
+//		   }
+//		};
 	
 	
 	@Override
@@ -123,7 +124,7 @@ public class bleService extends Service{
 		
 	}
 	@Override
-	public void onDestroy(){
+	public void onDestroy(){ // disconnects the sensortag connection after quitting service
 		mConnectedGatt1.disconnect();
 		mConnectedGatt2.disconnect();
 		mBluetoothAdapter.stopLeScan(mLeScanCallback);
@@ -137,7 +138,7 @@ public class bleService extends Service{
     public boolean initialize() {
         // For API level 18 and above, get a reference to BluetoothAdapter through
         // BluetoothManager.
-        if (mBluetoothManager == null) {
+        if (mBluetoothManager == null) { // not sure how the logic works here
             mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
             if (mBluetoothManager == null) {
                 Log.e(TAG, "Unable to initialize BluetoothManager.");
@@ -196,7 +197,7 @@ final class MyThread extends Thread{
 	 mBluetoothAdapter.startLeScan(mLeScanCallback2);
 	 
 	 Log.i(DEBUG, "start scan");
-	 Handler h = new Handler(Looper.getMainLooper());
+	 Handler h = new Handler(Looper.getMainLooper()); //handler to delay the scan, if can't connect, then stop attempts to scan
 	 h.postDelayed(mStopScanRunnable, SCAN_PERIOD);
  }
  
