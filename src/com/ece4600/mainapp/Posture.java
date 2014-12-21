@@ -81,11 +81,21 @@ public class Posture extends Activity implements SensorEventListener{
 		
 	
 		
-        LocalBroadcastManager bManager = LocalBroadcastManager.getInstance(this);
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("POSTURE_ACTION");
+		
+        //LocalBroadcastManager bManager = LocalBroadcastManager.getInstance(this);
+        IntentFilter intentFilter = new IntentFilter("POSTURE_EVENT");
+        //intentFilter.addAction("POSTURE_ACTION");
         registerReceiver(broadcastRx, intentFilter);
 	}
+	
+	
+	
+	 @Override
+	 protected void onDestroy() {
+	  super.onDestroy();
+	  //un-register BroadcastReceiver
+	  unregisterReceiver(broadcastRx);
+	 }
 	@Override
 	public void onAccuracyChanged(Sensor sensor, int accuracy) {
 	//mSensorManager.registerListener(this, mAccelerometer, 100000);
@@ -163,8 +173,10 @@ public class Posture extends Activity implements SensorEventListener{
 	@Override
 		protected void onPause() {
 	super.onPause();
-	
-	unregisterReceiver(broadcastRx);
+
+    LocalBroadcastManager bManager = LocalBroadcastManager.getInstance(this);
+    //intentFilter.addAction("POSTURE_ACTION");   
+    bManager.unregisterReceiver(broadcastRx);
 	//mSensorManager.unregisterListener(this);
 	}
 	
@@ -272,12 +284,22 @@ public class Posture extends Activity implements SensorEventListener{
 // Broadcast reciever
 // Recieves updates from postureService
 	
+
+	
 	private BroadcastReceiver broadcastRx = new BroadcastReceiver() {
 	    @Override
 	    public void onReceive(Context context, Intent intent) {
 	        
 	        	String posture = intent.getStringExtra("POSTURE");
 	        	Log.v("PostureActivity",posture);
+	        	
+	        	if (posture.equals("VERTICAL"))
+	        	{
+	        		img.setImageBitmap(posture_states[1]);
+	        	}
+	        	else{
+	        		img.setImageBitmap(posture_states[0]);
+	        	}
 	        
 	    }
 	};

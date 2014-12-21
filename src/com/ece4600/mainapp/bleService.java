@@ -1,8 +1,12 @@
 package com.ece4600.mainapp;
 
 import static java.util.UUID.fromString;
+
+import java.io.File;
 import java.util.List;
 import java.util.UUID;
+
+
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -15,9 +19,11 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.text.format.Time;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -42,6 +48,9 @@ public class bleService extends Service{
     private final String device2_MAC = "90:59:AF:0B:82:D9";
     
     public dataArray[] array_2d = new dataArray[2];
+    
+    private String fileNameD1, fileNameD2, filePath, fileName;
+    private int count;
     
     //--------------------------------------------------------------------
     // TI SensorTag UUIDs
@@ -90,6 +99,16 @@ public class bleService extends Service{
 	  public int onStartCommand(Intent intent, int flags, int startId) {
 	    //TODO do something useful
 		initialize();
+		
+	    createAppFolder();
+		filePath = Environment.getExternalStorageDirectory() + "/G01Capstone/";
+		
+    	Time now = new Time();
+		now.setToNow();
+		fileName = "DEVICES " + now.format("%Y-%m-%d %H-%M-%S") + ".txt";
+		count = 0;
+		
+		
 		mSensor1 = mSensorState.DISCONNECTED; //  set the sensor indicator value to disconnected
 		mSensor2 = mSensorState.DISCONNECTED;
 		MyThread myThread = new MyThread(); // creating a new thread?
@@ -518,6 +537,25 @@ private Runnable runnable = new Runnable() {
 		  i.putExtra("ZVal1", (float) array_2d[0].zaxis);
 		  startService(i);
 		  
+		  
+		  if (count<100){
+		  FileOperations fileOperations = new FileOperations();
+          fileOperations.write(fileName, data,filePath, 3);
+          count++;
+		  }
+		  else if (count == 100){
+			  Handler h = new Handler(Looper.getMainLooper());
+				h.post(new Runnable(){
+					@Override
+					public void run(){
+						//Log.i(DEBUG, "Connection successful, Getting Services");
+						Toast.makeText( bleService.this, "Recording Done", Toast.LENGTH_SHORT).show();
+					}
+				});
+				count = 200;
+		  }
+          
+		  
 		  }
 	   else{
 		   handler.removeCallbacks(this);
@@ -552,7 +590,11 @@ private void readDevice2(){
 
 
 
-
+	private void createAppFolder(){
+  		final String PATH = Environment.getExternalStorageDirectory() + "/G01Capstone/";
+  		if(!(new File(PATH)).exists()) 
+  		new File(PATH).mkdirs();
+  	}
 
 };
 

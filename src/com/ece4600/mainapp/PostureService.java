@@ -90,15 +90,21 @@ public class PostureService extends Service{
 			Log.e("PostureService", newPosture);
 			postureState = newPosture;
 			//Intent i = new Intent(PostureService.this,Posture.class);
+			//Intent i = new Intent("POSTURE_EVENT");
 			//i.setAction("POSTURE_ACTION");
 			//i.putExtra("POSTURE", newPosture);
 			//sendBroadcast(i);
+			
 			Handler h = new Handler(Looper.getMainLooper());
 			h.post(new Runnable(){
 				@Override
 				public void run(){
 					//Log.i(DEBUG, "Connection successful, Getting Services");
 					Toast.makeText( PostureService.this, postureState, Toast.LENGTH_SHORT).show();
+					Intent i = new Intent("POSTURE_EVENT");
+					//i.setAction("POSTURE_ACTION");
+					i.putExtra("POSTURE", newPosture);
+					sendBroadcast(i);
 				}
 			});
 		}
