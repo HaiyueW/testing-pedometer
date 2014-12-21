@@ -327,9 +327,9 @@ private BluetoothGattCallback mGattCallback1 = new BluetoothGattCallback() {
 		
 		//readSensor(gatt);
 		
-		//startScan();
-		poll1();
-		stopScan();
+		startScan();
+		//poll1();
+		//stopScan();
     }
 	/* Read a sensor:*/
 	public void readSensor(BluetoothGatt gatt){
