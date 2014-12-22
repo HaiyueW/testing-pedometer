@@ -17,6 +17,12 @@ public class PostureService extends Service{
 	public static dataArrayFloat[] array_2d = new dataArrayFloat[2];
 	
 	private static float avgX1, avgY1, avgZ1, avgX2, avgY2, avgZ2;
+	private double roll_1, roll_2,pitch_1,pitch_2 , roll_1_comp, roll_2_comp;
+	
+	
+	//CONSTANTS
+	private static double threshold_1_roll = (float)30.0;
+	private static double threshold_2_roll = (float) 30.0;
 	private static float THRESHOLD_CONSTANT = (float) 0.85;
 	
 	@Override
@@ -30,7 +36,7 @@ public class PostureService extends Service{
 		/* Called when service is first created
 		 * one time setup. Not called if already running*/
 		i = 0;
-		postureState = "VERTICAL";
+		postureState = "STANDING";
 		super.onCreate();
 	}
 
@@ -97,31 +103,83 @@ public class PostureService extends Service{
 			avgZ2 +=  array_10_D2[m].zaxis;
 			
 		}
-			
+		
+		avgX1 = avgX1 / 10.0f;
+		avgY1 = avgY1 / 10.0f;
+		avgZ1 = avgZ1 / 10.0f;
+		
+		avgX2 = avgX2 / 10.0f;
+		avgY2 = avgY2 / 10.0f;
+		avgZ2 = avgZ2 / 10.0f;
+		
+	
+		
 		Handler hAvg = new Handler(Looper.getMainLooper());
 		hAvg.post(new Runnable(){
 			@Override
 			public void run(){
 				Intent i = new Intent("POSTURE_EVENT");
 				
-				i.putExtra("avgX1", avgX1/10);
-				i.putExtra("avgY1", avgY1/10);
-				i.putExtra("avgZ1", avgZ1/10);
+				i.putExtra("avgX1", avgX1);
+				i.putExtra("avgY1", avgY1);
+				i.putExtra("avgZ1", avgZ1);
 				
-				i.putExtra("avgX2", avgX2/10);
-				i.putExtra("avgY2", avgY2/10);
-				i.putExtra("avgZ2", avgZ2/10);
+				i.putExtra("avgX2", avgX2);
+				i.putExtra("avgY2", avgY2);
+				i.putExtra("avgZ2", avgZ2);
 				
 				sendBroadcast(i);
 			}
 		});
-			
-		if ( Math.abs(avgY1/10) > THRESHOLD_CONSTANT )
+		
+		
+		
+		/*if ( Math.abs(avgY1/10) > THRESHOLD_CONSTANT )
 			newPosture = "VERTICAL";
 		else
-			newPosture = "HORIZONTAL";
-		    
+			newPosture = "HORIZONTAL";*/
 		
+		// Roll angle may be wrong
+		roll_1 =   Math.atan2((double)  avgZ1,(double) -1.0* avgY1) * 180 / Math.PI;
+		pitch_1 = Math.atan2((double)avgZ1,(double)avgY1) * 180 / Math.PI;
+
+		roll_2 = Math.atan2((double)  avgZ2,(double)-1.0*avgY2) * 180 / Math.PI;
+		
+		pitch_2 = Math.atan2((double)avgZ2,(double)avgY2) * 180 / Math.PI;
+		
+		
+		String dataAngles = "roll_1:" + roll_1+ ",roll_2:" +roll_2;
+		Log.i("postureService", dataAngles);
+		
+		// for sitting standing lying down and bending
+
+		roll_1_comp = Double.compare(Math.abs(roll_1), threshold_1_roll); // if greater than 0 , output greater than threshold
+		roll_2_comp = Double.compare(Math.abs(roll_2), threshold_2_roll);
+		
+		String dataCompare = "roll_1_comp:" + roll_1_comp+ ",roll_2:" +roll_2_comp;
+		Log.i("postureService", dataCompare);
+		
+		if ((roll_1_comp  <= 0 )&& (roll_2_comp  < 0) ) {
+			// standing condition  
+			newPosture = "STAND";
+			}
+			
+			else if ((roll_1_comp  <= 0) && (roll_2_comp  > 0 )) {
+			// sitting condition
+			newPosture = "SIT";
+			}
+			else if ((roll_1_comp  >= 0) && (roll_2_comp  < 0) ) {
+			// bending condition
+			newPosture = "BEND";
+			}
+			else 
+			newPosture = "LYING";	
+			// lying down position 
+				{
+			// conditions for lying down, can be written as mutually exclusive list. 
+			
+		 
+	   }
 		
 		if (!newPosture.equals(postureState)){
 			// Where data is sent to posture class
@@ -137,6 +195,7 @@ public class PostureService extends Service{
 					//Log.i(DEBUG, "Connection successful, Getting Services");
 					Toast.makeText( PostureService.this, postureState, Toast.LENGTH_SHORT).show();
 					Intent i = new Intent("POSTURE_EVENT");
+					
 					i.putExtra("POSTURE", newPosture);
 					
 					sendBroadcast(i);
