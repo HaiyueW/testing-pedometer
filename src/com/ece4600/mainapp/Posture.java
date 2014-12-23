@@ -40,7 +40,7 @@ public class Posture extends Activity {
 	
 	private SensorManager mSensorManager;
 	private Sensor mAccelerometer;
-	private TextView axisX1, axisY1, axisZ1,axisX2, axisY2, axisZ2;
+	private TextView axisX1, axisY1, axisZ1,axisX2, axisY2, axisZ2, postureText;
 	public TextView timenano,x_avg,threshold;
 	public dataSample[] array_10 = new dataSample[10];
 	int i = 0;
@@ -49,7 +49,7 @@ public class Posture extends Activity {
 	//public ImageView img = new ImageView(this);
 	
 	
-	Bitmap posture_states[] = new Bitmap[2];
+	Bitmap posture_states[] = new Bitmap[4];
 	
 	
 	@Override
@@ -73,11 +73,15 @@ public class Posture extends Activity {
 		axisY2 = (TextView) findViewById(R.id.acc_y2);
 		axisZ2 = (TextView) findViewById(R.id.acc_z2);
 		
+		postureText = (TextView) findViewById(R.id.postureText);
+		
 		img = (ImageView) findViewById(R.id.displayIMG); 
 		
 		
-		posture_states[0] = BitmapFactory.decodeResource(getResources(), R.drawable.lyingdown1);
-		posture_states[1] = BitmapFactory.decodeResource(getResources(), R.drawable.stand1);
+		posture_states[0] = BitmapFactory.decodeResource(getResources(), R.drawable.standing);
+		posture_states[1] = BitmapFactory.decodeResource(getResources(), R.drawable.sitting);
+		posture_states[2] = BitmapFactory.decodeResource(getResources(), R.drawable.bending);
+		posture_states[3] = BitmapFactory.decodeResource(getResources(), R.drawable.lying);
 		
 	
         IntentFilter intentFilter = new IntentFilter("POSTURE_EVENT");
@@ -227,13 +231,28 @@ public class Posture extends Activity {
 	        	}
 	        	
 	        	if (posture != null){
-	        	if (posture.equals("VERTICAL"))
+	        	/*if (posture.equals("VERTICAL"))
 	        	{
 	        		img.setImageBitmap(posture_states[1]);
 	        	}
 	        	else if(posture.equals("HORIZONTAL")){
 	        		img.setImageBitmap(posture_states[0]);
-	        	}
+	        	}*/
+	        		
+	        		if (posture.equals("STAND")){
+	        			img.setImageBitmap(posture_states[0]);
+	        		}
+	        		else if (posture.equals("SIT")){
+	        			img.setImageBitmap(posture_states[1]);
+	        		}
+	        		else if (posture.equals("BEND")){
+	        			img.setImageBitmap(posture_states[2]);
+	        		}
+	        		else if (posture.equals("LIEFRONT")|| posture.equals("LIEBACK") || posture.equals("LIERIGHT") || posture.equals("LIELEFT")){
+	        			img.setImageBitmap(posture_states[3]);
+	        		}
+	        		
+	        		postureText.setText(posture);
 	        	}
 	        
 	    }

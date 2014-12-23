@@ -1,5 +1,7 @@
 package com.ece4600.mainapp;
 
+
+
 import android.app.IntentService;
 import android.app.Service;
 import android.content.Intent;
@@ -12,18 +14,20 @@ import android.widget.Toast;
 public class PostureService extends Service{
 	public static dataArrayFloat[] array_10_D1 = new dataArrayFloat[11];
 	public static dataArrayFloat[] array_10_D2 = new dataArrayFloat[11];
-	public static int i;
-	public static String postureState, newPosture;
+	public static int i,counter;
+	public static String postureState, newPosture, nowPosture,changePosture;
 	public static dataArrayFloat[] array_2d = new dataArrayFloat[2];
 	
 	private static float avgX1, avgY1, avgZ1, avgX2, avgY2, avgZ2;
 	private double roll_1, roll_2,pitch_1,pitch_2 , roll_1_comp, roll_2_comp;
+	private double probBack, probFront, probLeft, probRight;
 	
 	
 	//CONSTANTS
 	private static double threshold_1_roll = (float)30.0;
 	private static double threshold_2_roll = (float) 30.0;
 	private static float THRESHOLD_CONSTANT = (float) 0.85;
+	private static int threshold_counterPosture = (int) 3;
 	
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -35,8 +39,20 @@ public class PostureService extends Service{
 	public void onCreate(){
 		/* Called when service is first created
 		 * one time setup. Not called if already running*/
+		probBack = 0.0;
+		probFront = 0.0;
+		probLeft = 0.0;
+		probRight = 0.0;
+		
 		i = 0;
-		postureState = "STANDING";
+		postureState = "STAND";
+		newPosture = "STAND";
+		changePosture = "STAND";
+		nowPosture = "STAND";
+		
+		Handler h = new Handler(Looper.getMainLooper()); //handler to delay the scan, if can't connect, then stop attempts to scan
+		h.postDelayed(resendPosture, 1000);	
+		
 		super.onCreate();
 	}
 
@@ -140,6 +156,7 @@ public class PostureService extends Service{
 			newPosture = "HORIZONTAL";*/
 		
 		// Roll angle may be wrong
+		
 		roll_1 =   Math.atan2((double)  avgZ1,(double) -1.0* avgY1) * 180 / Math.PI;
 		pitch_1 = Math.atan2((double)avgZ1,(double)avgY1) * 180 / Math.PI;
 
@@ -147,6 +164,8 @@ public class PostureService extends Service{
 		
 		pitch_2 = Math.atan2((double)avgZ2,(double)avgY2) * 180 / Math.PI;
 		
+		//roll_1 = atan3((double)  avgZ1,(double) -1.0* avgY1);
+		//roll_2 = atan3((double)  avgZ2,(double) -1.0* avgY2);
 		
 		String dataAngles = "roll_1:" + roll_1+ ",roll_2:" +roll_2;
 		Log.i("postureService", dataAngles);
@@ -159,27 +178,41 @@ public class PostureService extends Service{
 		String dataCompare = "roll_1_comp:" + roll_1_comp+ ",roll_2:" +roll_2_comp;
 		Log.i("postureService", dataCompare);
 		
-		if ((roll_1_comp  <= 0 )&& (roll_2_comp  < 0) ) {
+		if ((roll_1_comp  <= 0 )&& (roll_2_comp  < 0) && (Math.abs(avgY1) >= 0.8) && (Math.abs(avgY1) <= 1.3)) {
 			// standing condition  
-			newPosture = "STAND";
+			nowPosture = "STAND";
 			}
 			
-			else if ((roll_1_comp  <= 0) && (roll_2_comp  > 0 )) {
+		else if ((roll_1_comp  <= 0) && (roll_2_comp  > 0 )) {
 			// sitting condition
-			newPosture = "SIT";
+			nowPosture = "SIT";
 			}
-			else if ((roll_1_comp  >= 0) && (roll_2_comp  < 0) ) {
+		else if ((roll_1_comp  >= 0) && (roll_2_comp  < 0) ) {
 			// bending condition
-			newPosture = "BEND";
+			nowPosture = "BEND";
 			}
-			else 
-			newPosture = "LYING";	
-			// lying down position 
-				{
+		else {// lying down position 
+			nowPosture = lieDownPosture((double) avgX1, (double) avgY1, (double) avgZ1);	
 			// conditions for lying down, can be written as mutually exclusive list. 
 			
 		 
-	   }
+		}
+		
+		
+		if (!nowPosture.equals(changePosture)){
+			changePosture = nowPosture;
+		}
+		
+		if (nowPosture.equals(changePosture))
+		{
+			counter++;
+		}
+		
+		
+		if (counter == threshold_counterPosture){
+			newPosture = changePosture;
+			counter =0;
+		}
 		
 		if (!newPosture.equals(postureState)){
 			// Where data is sent to posture class
@@ -187,6 +220,9 @@ public class PostureService extends Service{
 			Log.e("PostureService", newPosture);
 			postureState = newPosture;
 
+			Intent i = new Intent("POSTURE_EVENT");
+			i.putExtra("POSTURE", newPosture);
+			sendBroadcast(i);
 			
 			Handler h = new Handler(Looper.getMainLooper());
 			h.post(new Runnable(){
@@ -194,11 +230,7 @@ public class PostureService extends Service{
 				public void run(){
 					//Log.i(DEBUG, "Connection successful, Getting Services");
 					Toast.makeText( PostureService.this, postureState, Toast.LENGTH_SHORT).show();
-					Intent i = new Intent("POSTURE_EVENT");
 					
-					i.putExtra("POSTURE", newPosture);
-					
-					sendBroadcast(i);
 				}
 			});
 		}
@@ -207,5 +239,84 @@ public class PostureService extends Service{
 		}
 	}// End of calculate Posture
 	
+	
+	private Runnable resendPosture = new Runnable() {
+		   @Override
+		   public void run() {
+			 
+			  Intent i = new Intent("POSTURE_EVENT");
+			  i.putExtra("POSTURE", newPosture);
+			  sendBroadcast(i);
+			 
+			  
+			  Handler h = new Handler(Looper.getMainLooper()); //handler to delay the scan, if can't connect, then stop attempts to scan
+			  h.postDelayed(this, 1000);
+			  
+		   }};
+		   
+	private String lieDownPosture(double X, double Y, double Z){
+		String liePosture = "LIE";
+		
+		if (Z < -0.6){
+			if( (Z > -1) && (Z< -0.6)){
+				probBack = -2.5 * Z - 1.5;
+			}
+			else{
+		 		probBack = 1.0;
+			}
+
+		}
+		else if (Z > 0.6){
+
+			if( (Z > 0.6) && (Z< 1.0)){
+				probFront = -2.5 * Z - 1.5;
+			}
+			else{
+				 probFront = 1.0;
+			}
+		}
+
+		else if(X< -0.6){
+
+			if( (X > -1) && (X< -0.6)){
+				probRight = -2.5 * Z - 1.5;
+			}
+			else{
+		 		probRight = 1.0;
+			}
+		}
+
+		else if(X > 0.6){
+
+			if( (X > 0.6) && (X< 1.0)){
+				probLeft = -2.5 * Z - 1.5;
+			}
+			else{
+				 probLeft = 1.0;
+			}
+		}
+		
+		
+		
+		if ((probBack > probFront)&&(probBack > probLeft) && (probBack > probRight)){
+			liePosture = "LIEBACK";
+		}
+		else if ((probFront > probBack)&&(probFront > probLeft) && (probFront > probRight)){
+			liePosture = "LIEFRONT";
+		}
+		else if ((probRight > probFront)&&(probRight > probLeft) && (probRight > probBack)){
+			liePosture = "LIERIGHT";
+		}
+		else{
+			liePosture = "LIELEFT";
+		}
+		
+		probBack = 0.0;
+		probFront = 0.0;
+		probRight = 0.0;
+		probLeft = 0.0;
+		return liePosture;
+	}
+
 	
 }

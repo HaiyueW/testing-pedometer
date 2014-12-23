@@ -547,7 +547,7 @@ private Runnable runnable = new Runnable() {
 		  startService(i);
 		  
 		  
-		  if (count<100){
+		/*  if (count<100){
 		  FileOperations fileOperations = new FileOperations();
           fileOperations.write(fileName, data,filePath, 3);
           count++;
@@ -562,7 +562,7 @@ private Runnable runnable = new Runnable() {
 					}
 				});
 				count = 200;
-		  }
+		  } */
           
 		  
 		  }

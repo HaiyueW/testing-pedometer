@@ -60,7 +60,7 @@
 
     <TextView
         android:id="@+id/device2Heading"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/acc_z1"
         android:layout_below="@+id/acc_z1"
@@ -68,7 +68,7 @@
 
     <TextView
         android:id="@+id/acc_x2"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/device2Heading"
         android:layout_below="@+id/device2Heading"
@@ -76,7 +76,7 @@
 
     <TextView
         android:id="@+id/acc_y2"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/acc_x2"
         android:layout_below="@+id/acc_x2"
@@ -84,20 +84,36 @@
 
     <TextView
         android:id="@+id/acc_z2"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignRight="@+id/acc_y2"
         android:layout_below="@+id/acc_y2"
         android:text="TextView" />
 
-    <ImageView
-        android:id="@+id/displayIMG"
-        android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/postureHeading"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/acc_z2"
         android:layout_below="@+id/acc_z2"
-        android:layout_marginLeft="14dp"
-        android:layout_marginTop="110dp"
+        android:text="Determined Posture:" />
+
+    <TextView
+        android:id="@+id/postureText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/postureHeading"
+        android:layout_below="@+id/postureHeading"
+        android:text="TextView" />
+
+    <ImageView
+        android:id="@+id/displayIMG"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/postureText"
+        android:layout_below="@+id/postureText"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="78dp"
         android:scaleType="fitCenter" />
 
 </RelativeLayout>
