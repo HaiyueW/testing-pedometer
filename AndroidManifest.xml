@@ -24,7 +24,7 @@
         
         <service android:name="bleService"></service>
         <service android:name="PostureService" ></service>
-        <service android:name="PostureService2" ></service>
+        
         
         <activity
             android:name=".Splash"

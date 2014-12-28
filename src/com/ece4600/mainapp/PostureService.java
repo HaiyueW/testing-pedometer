@@ -25,9 +25,11 @@ public class PostureService extends Service{
 	
 	//CONSTANTS
 	private static double threshold_1_roll = (float)30.0;
-	private static double threshold_2_roll = (float) 30.0;
-	private static float THRESHOLD_CONSTANT = (float) 0.85;
+	private static double threshold_2_roll = (float)30.0;
+	private static float THRESHOLD_CONSTANT = (float) 0.85; // not used
 	private static int threshold_counterPosture = (int) 3;
+	private static int totalAvgNum1 = (int) 11; // number in average plus 1
+	private static float divideAvg = 10.0f;
 	
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -70,18 +72,21 @@ public class PostureService extends Service{
 		float yValue2 = intent.getFloatExtra("YVal2", 0.0f);
 		float zValue2 = intent.getFloatExtra("ZVal2", 0.0f);
 		
-
-		dataArrayFloat data = new dataArrayFloat(xValue1, yValue1, zValue1);
-		array_10_D1[i] = data;
 		
-		dataArrayFloat data2 = new dataArrayFloat(xValue2, yValue2, zValue2);
-		array_10_D2[i] = data2;
 		
-		Log.v("PostureService", "Recieved data");
+		double dummy = Math.sqrt(xValue1 * xValue1 +  yValue1 * yValue1 +  zValue1 * zValue1 );
 		
-		i++;
+		if ((dummy >0.75)&&(dummy < 1.25))  {
+			dataArrayFloat data = new dataArrayFloat(xValue1, yValue1, zValue1);
+			array_10_D1[i] = data;
+			dataArrayFloat data2 = new dataArrayFloat(xValue2, yValue2, zValue2);
+			array_10_D2[i] = data2;
+			Log.v("PostureService", "Recieved data");
+			i++;
+		}
 		
-		if (i == (int)11) //i = 11 to get rid of null pointer exception
+		
+		if (i == totalAvgNum1) //i = 11 to get rid of null pointer exception
 		{
 			i = 0;
 			//running =true;
@@ -109,7 +114,7 @@ public class PostureService extends Service{
 		avgY2 = 0;
 		avgZ2 = 0;
 		
-		for(int m = 1; m< 11;m++){
+		for(int m = 1; m< totalAvgNum1;m++){
 			avgX1 +=  array_10_D1[m].xaxis;
 			avgY1 += array_10_D1[m].yaxis;
 			avgZ1 +=  array_10_D1[m].zaxis;
@@ -120,13 +125,13 @@ public class PostureService extends Service{
 			
 		}
 		
-		avgX1 = avgX1 / 10.0f;
-		avgY1 = avgY1 / 10.0f;
-		avgZ1 = avgZ1 / 10.0f;
+		avgX1 = avgX1 / divideAvg;
+		avgY1 = avgY1 / divideAvg;
+		avgZ1 = avgZ1 / divideAvg;
 		
-		avgX2 = avgX2 / 10.0f;
-		avgY2 = avgY2 / 10.0f;
-		avgZ2 = avgZ2 / 10.0f;
+		avgX2 = avgX2 / divideAvg;
+		avgY2 = avgY2 / divideAvg;
+		avgZ2 = avgZ2 / divideAvg;
 		
 	
 		
@@ -149,18 +154,48 @@ public class PostureService extends Service{
 		});
 		
 		
+		float dumAvgZ1, dumAvgY1, dumAvgZ2, dumAvgY2;
 		
-		/*if ( Math.abs(avgY1/10) > THRESHOLD_CONSTANT )
-			newPosture = "VERTICAL";
+		if (Math.abs(avgZ1) < 0.2){
+			dumAvgZ1 = 0.0f;
+		}
 		else
-			newPosture = "HORIZONTAL";*/
+			dumAvgZ1 = avgZ1;
+		
+		if (Math.abs(avgY1) < 0.2){
+			dumAvgY1 = 0.0f;
+		}
+		else
+			dumAvgY1 = avgY1;
+		
+		
+		
+		if (Math.abs(avgZ2) < 0.2){
+			dumAvgZ2 = 0.0f;
+		}
+		else
+			dumAvgZ2 = avgZ2;
+		
+		if (Math.abs(avgY2) < 0.2){
+			dumAvgY2 = 0.0f;
+		}
+		else
+			dumAvgY2 = avgY2;
+		
 		
 		// Roll angle may be wrong
 		
-		roll_1 =   Math.atan2((double)  avgZ1,(double) -1.0* avgY1) * 180 / Math.PI;
+		roll_1 =   Math.atan2((double)  dumAvgZ1,(double) -1.0* dumAvgY1) * 180 / Math.PI;
 		pitch_1 = Math.atan2((double)avgZ1,(double)avgY1) * 180 / Math.PI;
 
-		roll_2 = Math.atan2((double)  avgZ2,(double)-1.0*avgY2) * 180 / Math.PI;
+		roll_2 = Math.atan2((double)  dumAvgZ2,(double)-1.0*dumAvgY2) * 180 / Math.PI;
+		
+		
+		if (Math.abs(roll_1) == 180)
+			roll_1 = 0;
+		if (Math.abs(roll_2) == 180)
+			roll_2 = 0;
+		
 		
 		pitch_2 = Math.atan2((double)avgZ2,(double)avgY2) * 180 / Math.PI;
 		
@@ -177,6 +212,7 @@ public class PostureService extends Service{
 		
 		String dataCompare = "roll_1_comp:" + roll_1_comp+ ",roll_2:" +roll_2_comp;
 		Log.i("postureService", dataCompare);
+	
 		
 		if ((roll_1_comp  <= 0 )&& (roll_2_comp  < 0) && (Math.abs(avgY1) >= 0.8) && (Math.abs(avgY1) <= 1.3)) {
 			// standing condition  
@@ -198,6 +234,28 @@ public class PostureService extends Service{
 		 
 		}
 		
+		
+		/*
+		
+		if (postureState.equals("STAND")){
+			nowPosture = detPostureFromStand(roll_1_comp,roll_2_comp, postureState);
+		}
+		else if (postureState.equals("BEND")){
+			nowPosture = detPostureFromBend(roll_1_comp,roll_2_comp, postureState, avgY1);
+		}
+		else if (postureState.equals("SIT")){
+			nowPosture = lieDownPosture((double) avgX1, (double) avgY1, (double) avgZ1);	
+		}
+		else if (postureState.equals("LIEFRONT")|| postureState.equals("LIEBACK") || postureState.equals("LIERIGHT") || postureState.equals("LIELEFT")){
+			if ((roll_1_comp  < 0) && (roll_2_comp  > 0 )) {
+				// sitting condition
+				nowPosture = "SIT";
+				}
+			else{
+				nowPosture = lieDownPosture((double) avgX1, (double) avgY1, (double) avgZ1);	
+			}
+		}
+		*/
 		
 		if (!nowPosture.equals(changePosture)){
 			changePosture = nowPosture;
@@ -257,7 +315,7 @@ public class PostureService extends Service{
 	private String lieDownPosture(double X, double Y, double Z){
 		String liePosture = "LIE";
 		
-		if (Z < -0.6){
+		/*if (Z < -0.6){
 			if( (Z > -1) && (Z< -0.6)){
 				probBack = -2.5 * Z - 1.5;
 			}
@@ -269,17 +327,17 @@ public class PostureService extends Service{
 		else if (Z > 0.6){
 
 			if( (Z > 0.6) && (Z< 1.0)){
-				probFront = -2.5 * Z - 1.5;
+				probFront = 3.33 * Z - 2.0;
 			}
 			else{
 				 probFront = 1.0;
 			}
 		}
 
-		else if(X< -0.6){
+		if(X< -0.6){
 
 			if( (X > -1) && (X< -0.6)){
-				probRight = -2.5 * Z - 1.5;
+				probRight = -2.5 * X - 1.5;
 			}
 			else{
 		 		probRight = 1.0;
@@ -289,13 +347,71 @@ public class PostureService extends Service{
 		else if(X > 0.6){
 
 			if( (X > 0.6) && (X< 1.0)){
-				probLeft = -2.5 * Z - 1.5;
+				probLeft =3.33 * X - 2.0;
 			}
 			else{
 				 probLeft = 1.0;
 			}
 		}
 		
+		*/
+		
+		// X axis
+		if ( X <= -0.8){
+			probRight = 1.0;
+		}
+		else if( (X < -0.75) && (X > -0.8)){
+			probRight = -4.0*X - 3.0;
+		}
+		else if ( (X>= 0.75) && (X<0.8)){
+			probLeft = 4.0 * X - 3.0;
+		}
+		else if (X>= 0.8){ // X> 0.8
+			probLeft = 1.0;
+		}
+		
+		
+		if( (X >= -0.8) && (X <-0.6) ){
+			probFront = 5.0 * X + 4.0;
+			probBack = probFront;		
+		}
+		else if ((X>= -0.6) && (X<= 0.6)){
+			probFront = 1.0;
+			probBack = 1.0;
+		}
+		else if ((X> 0.6) && (X<=  0.8)){
+			probFront = -5.0 * X + 4.0;
+			probBack = probFront;
+		}
+		
+		
+		//Z-AXIS
+		if ( Z <= -0.9){
+			probBack += 1.0;
+		}
+		else if( (Z < -0.5) && (Z > -0.9)){
+			probBack = -2.5 * Z -  1.25 + probBack;
+		}
+		else if ( (Z>= 0.5) && (Z<0.9)){
+			probFront = 2.5 * Z - 1.25 + probFront;
+		}
+		else if (Z>= 0.9){
+			probFront += 1.0;
+		}
+		
+		
+		if( (Z >= -0.9) && (Z <-0.5) ){
+			probRight = 2.5 * Z + 2.25 + probRight;	
+			probLeft = 2.5 * Z + 2.25 + probLeft;
+		}
+		else if ((Z>= -0.5) && (Z<= 0.5)){
+			probRight += 1.0;
+			probLeft += 1.0;
+		}
+		else if ((Z > 0.5) && (Z <0.9) ){
+			probRight = -2.5 * Z + 2.25 + probRight;
+			probLeft = -2.5 * Z + 2.25 + probLeft;
+		}
 		
 		
 		if ((probBack > probFront)&&(probBack > probLeft) && (probBack > probRight)){
@@ -318,5 +434,35 @@ public class PostureService extends Service{
 		return liePosture;
 	}
 
+	private String detPostureFromStand(double roll_1_comp, double roll_2_comp, String currentPosture){
+		String newPosture = null;
+		if ((roll_1_comp  <= 0) && (roll_2_comp  > 0 )) {
+			// sitting condition
+			newPosture =  "SIT"; 
+			return newPosture;
+			}
+		else if ((roll_1_comp  >= 0) && (roll_2_comp  < 0) ) {
+			// bending condition
+			newPosture =  "BEND"; 	
+			return newPosture;
+		}
+		return currentPosture;
+	}
+	
+	private String detPostureFromBend(double roll_1_comp, double roll_2_comp, String currentPosture, double avgY1){
+		String newPosture = null;
+		if ((roll_1_comp  <= 0 )&& (roll_2_comp  < 0) && (Math.abs(avgY1) >= 0.8) && (Math.abs(avgY1) <= 1.3)) {
+			// standing condition  
+			 newPosture = "STAND";
+		return  newPosture;	
+		}
+			
+		else if ((roll_1_comp  <= 0) && (roll_2_comp  > 0 )) {
+			// sitting condition
+			 newPosture = "SIT";
+		return  newPosture;
+			}
+		return currentPosture;
+	}
 	
 }
