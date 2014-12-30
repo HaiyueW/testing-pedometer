@@ -21,6 +21,8 @@ public class PostureService extends Service{
 	private static float avgX1, avgY1, avgZ1, avgX2, avgY2, avgZ2;
 	private double roll_1, roll_2,pitch_1,pitch_2 , roll_1_comp, roll_2_comp;
 	private double probBack, probFront, probLeft, probRight;
+	private double wScoreLBS, wScoreLFS, wScoreLLS, wScoreLRS;
+	private double wScoreSIT, wScoreBEND, wScoreSTAND;
 	
 	
 	//CONSTANTS
@@ -182,80 +184,54 @@ public class PostureService extends Service{
 		else
 			dumAvgY2 = avgY2;
 		
+		wScoreLBS = 0.0;
+		wScoreLFS = 0.0;
+		wScoreLLS = 0.0;
+		wScoreLRS = 0.0;
 		
-		// Roll angle may be wrong
-		
-		roll_1 =   Math.atan2((double)  dumAvgZ1,(double) -1.0* dumAvgY1) * 180 / Math.PI;
-		pitch_1 = Math.atan2((double)avgZ1,(double)avgY1) * 180 / Math.PI;
-
-		roll_2 = Math.atan2((double)  dumAvgZ2,(double)-1.0*dumAvgY2) * 180 / Math.PI;
-		
-		
-		if (Math.abs(roll_1) == 180)
-			roll_1 = 0;
-		if (Math.abs(roll_2) == 180)
-			roll_2 = 0;
+		wScoreLBS =  calcWScoreLBS (avgX1, avgY1, avgZ1,avgX2, avgY2, avgZ2);
+		wScoreLFS =  calcWScoreLFS(avgX1, avgY1, avgZ1,avgX2, avgY2, avgZ2);
+		wScoreLLS =  calcWScoreLLS (avgX1, avgY1, avgZ1,avgX2, avgY2, avgZ2);
+		wScoreLRS =  calcWScoreLRS (avgX1, avgY1, avgZ1,avgX2, avgY2, avgZ2);
 		
 		
-		pitch_2 = Math.atan2((double)avgZ2,(double)avgY2) * 180 / Math.PI;
+		wScoreSIT = 0.0;
+		wScoreSIT = calcWScoreSIT(avgX1, avgY1, avgZ1,avgX2, avgY2, avgZ2);
+		wScoreSTAND = 0.0;
+		wScoreSTAND =  calcWScoreSTAND(avgX1, avgY1, avgZ1,avgX2, avgY2, avgZ2);
+		wScoreBEND = 0.0;
+		wScoreBEND = calcWScoreBEND(avgX1, avgY1, avgZ1,avgX2, avgY2, avgZ2);
 		
-		//roll_1 = atan3((double)  avgZ1,(double) -1.0* avgY1);
-		//roll_2 = atan3((double)  avgZ2,(double) -1.0* avgY2);
-		
-		String dataAngles = "roll_1:" + roll_1+ ",roll_2:" +roll_2;
-		Log.i("postureService", dataAngles);
-		
-		// for sitting standing lying down and bending
-
-		roll_1_comp = Double.compare(Math.abs(roll_1), threshold_1_roll); // if greater than 0 , output greater than threshold
-		roll_2_comp = Double.compare(Math.abs(roll_2), threshold_2_roll);
-		
-		String dataCompare = "roll_1_comp:" + roll_1_comp+ ",roll_2:" +roll_2_comp;
-		Log.i("postureService", dataCompare);
-	
-		
-		if ((roll_1_comp  <= 0 )&& (roll_2_comp  < 0) && (Math.abs(avgY1) >= 0.8) && (Math.abs(avgY1) <= 1.3)) {
-			// standing condition  
+		if ((wScoreSTAND > wScoreLFS)&&(wScoreSTAND > wScoreLLS ) && (wScoreSTAND> wScoreLRS) && ( wScoreSTAND > wScoreLBS)
+				&& (wScoreSTAND > wScoreSIT) && (wScoreSTAND> wScoreBEND)){
 			nowPosture = "STAND";
-			}
-			
-		else if ((roll_1_comp  <= 0) && (roll_2_comp  > 0 )) {
-			// sitting condition
-			nowPosture = "SIT";
-			}
-		else if ((roll_1_comp  >= 0) && (roll_2_comp  < 0) ) {
-			// bending condition
+		}
+		else if((wScoreBEND > wScoreLFS)&&(wScoreBEND > wScoreLLS ) && (wScoreBEND> wScoreLRS) && ( wScoreBEND > wScoreLBS)
+				&& (wScoreBEND > wScoreSTAND) && (wScoreBEND > wScoreSIT)){
 			nowPosture = "BEND";
-			}
-		else {// lying down position 
-			nowPosture = lieDownPosture((double) avgX1, (double) avgY1, (double) avgZ1);	
-			// conditions for lying down, can be written as mutually exclusive list. 
-			
-		 
+		}
+		else if((wScoreSIT > wScoreLFS)&&(wScoreSIT > wScoreLLS ) && (wScoreSIT> wScoreLRS) && ( wScoreSIT > wScoreLBS)
+				&& (wScoreSIT > wScoreSTAND) && (wScoreSIT> wScoreBEND)){
+			nowPosture = "SIT";
+		}
+		else if ((wScoreLBS > wScoreLFS)&&(wScoreLBS > wScoreLLS ) && (wScoreLBS> wScoreLRS) && (wScoreLBS> wScoreSIT)
+				&& (wScoreLBS > wScoreSTAND) && (wScoreLBS> wScoreBEND)){
+			nowPosture = "LIEBACK";
+		}
+		else if ((wScoreLFS > wScoreLBS)&&(wScoreLFS> wScoreLLS ) && (wScoreLFS > wScoreLRS) && (wScoreLFS > wScoreSIT)
+				&& (wScoreLFS > wScoreSTAND) && (wScoreLFS> wScoreBEND)){
+			nowPosture = "LIEFRONT";
+		}
+		else if ((wScoreLRS > wScoreLFS)&&(wScoreLRS > wScoreLLS ) && (wScoreLRS> wScoreLBS) && (wScoreLRS > wScoreSIT)
+				&& (wScoreLRS > wScoreSTAND)&& (wScoreLRS> wScoreBEND)){
+			nowPosture = "LIERIGHT";
+		}
+		else if ((wScoreLLS > wScoreLFS)&&(wScoreLLS > wScoreLRS ) && (wScoreLLS> wScoreLBS) && (wScoreLLS > wScoreSIT)
+				&& (wScoreLLS > wScoreSTAND) && (wScoreLLS> wScoreBEND)){
+			nowPosture = "LIELEFT";
 		}
 		
 		
-		/*
-		
-		if (postureState.equals("STAND")){
-			nowPosture = detPostureFromStand(roll_1_comp,roll_2_comp, postureState);
-		}
-		else if (postureState.equals("BEND")){
-			nowPosture = detPostureFromBend(roll_1_comp,roll_2_comp, postureState, avgY1);
-		}
-		else if (postureState.equals("SIT")){
-			nowPosture = lieDownPosture((double) avgX1, (double) avgY1, (double) avgZ1);	
-		}
-		else if (postureState.equals("LIEFRONT")|| postureState.equals("LIEBACK") || postureState.equals("LIERIGHT") || postureState.equals("LIELEFT")){
-			if ((roll_1_comp  < 0) && (roll_2_comp  > 0 )) {
-				// sitting condition
-				nowPosture = "SIT";
-				}
-			else{
-				nowPosture = lieDownPosture((double) avgX1, (double) avgY1, (double) avgZ1);	
-			}
-		}
-		*/
 		
 		if (!nowPosture.equals(changePosture)){
 			changePosture = nowPosture;
@@ -312,49 +288,12 @@ public class PostureService extends Service{
 			  
 		   }};
 		   
+	//----------------------------------------------- 
+	//  lie down fuzzy logic
+	//----------------------------------------------- 	   
 	private String lieDownPosture(double X, double Y, double Z){
 		String liePosture = "LIE";
 		
-		/*if (Z < -0.6){
-			if( (Z > -1) && (Z< -0.6)){
-				probBack = -2.5 * Z - 1.5;
-			}
-			else{
-		 		probBack = 1.0;
-			}
-
-		}
-		else if (Z > 0.6){
-
-			if( (Z > 0.6) && (Z< 1.0)){
-				probFront = 3.33 * Z - 2.0;
-			}
-			else{
-				 probFront = 1.0;
-			}
-		}
-
-		if(X< -0.6){
-
-			if( (X > -1) && (X< -0.6)){
-				probRight = -2.5 * X - 1.5;
-			}
-			else{
-		 		probRight = 1.0;
-			}
-		}
-
-		else if(X > 0.6){
-
-			if( (X > 0.6) && (X< 1.0)){
-				probLeft =3.33 * X - 2.0;
-			}
-			else{
-				 probLeft = 1.0;
-			}
-		}
-		
-		*/
 		
 		// X axis
 		if ( X <= -0.8){
@@ -434,35 +373,491 @@ public class PostureService extends Service{
 		return liePosture;
 	}
 
-	private String detPostureFromStand(double roll_1_comp, double roll_2_comp, String currentPosture){
-		String newPosture = null;
-		if ((roll_1_comp  <= 0) && (roll_2_comp  > 0 )) {
-			// sitting condition
-			newPosture =  "SIT"; 
-			return newPosture;
-			}
-		else if ((roll_1_comp  >= 0) && (roll_2_comp  < 0) ) {
-			// bending condition
-			newPosture =  "BEND"; 	
-			return newPosture;
+
+
+	//----------------------------------------------- 
+	//FUZZY LOGIC FUNCTIONS
+	//----------------------------------------------- 
+	private double calcWScoreLBS(double X1, double Y1, double Z1,double X2, double Y2, double Z2){
+		double wScoreLBS;
+		wScoreLBS = 0;
+		
+		//SENSORTAG ON CHEST
+		// X axis
+		if( (X1 >= -0.8) && (X1 <-0.6) ){
+			wScoreLBS = 5.0 * X1 + 4.0;	
 		}
-		return currentPosture;
-	}
-	
-	private String detPostureFromBend(double roll_1_comp, double roll_2_comp, String currentPosture, double avgY1){
-		String newPosture = null;
-		if ((roll_1_comp  <= 0 )&& (roll_2_comp  < 0) && (Math.abs(avgY1) >= 0.8) && (Math.abs(avgY1) <= 1.3)) {
-			// standing condition  
-			 newPosture = "STAND";
-		return  newPosture;	
+		else if ((X1>= -0.6) && (X1<= 0.6)){
+			wScoreLBS = 1.0;
 		}
-			
-		else if ((roll_1_comp  <= 0) && (roll_2_comp  > 0 )) {
-			// sitting condition
-			 newPosture = "SIT";
-		return  newPosture;
-			}
-		return currentPosture;
-	}
+		else if ((X1> 0.6) && (X1<=  0.8)){
+			wScoreLBS = -5.0 * X1 + 4.0;
+		}
+		//Y-AXIS
+		if( (Y1 >= -0.1) && (Y1 <-0.05) ){
+			wScoreLBS = 20.0 * Y1 + 2  + wScoreLBS;		
+		}
+		else if ((Y1>= -0.05) && (Y1<= 0.05)){
+			wScoreLBS += 1.0;
+		}
+		else if ((Y1> 0.05) && (Y1<=  0.1)){
+			wScoreLBS = -20.0 * Y1 + 2  + wScoreLBS;
+		}
+		//Z-AXIS
+		if ( Z1 <= -0.9){
+			wScoreLBS += 1.0;
+		}
+		else if( (Z1 < -0.5) && (Z1 > -0.9)){
+			wScoreLBS = -2.5 * Z1 -  1.25 + wScoreLBS;
+		}
+		
+		//SENSORTAG ON THIGH
+		// X axis
+		if( (X2 >= -0.8) && (X2 <-0.6) ){
+			wScoreLBS = 5.0 * X2 + 4.0 + wScoreLBS;	
+		}
+		else if ((X2>= -0.6) && (X2<= 0.6)){
+			wScoreLBS += 1.0;
+		}
+		else if ((X2> 0.6) && (X2<=  0.8)){
+			wScoreLBS = -5.0 * X2 + 4.0 + wScoreLBS;
+		}
+		
+		//Y-AXIS
+		if( (Y2 >= -0.1) && (Y2 <-0.05) ){
+			wScoreLBS = 20.0 * Y2 + 2  + wScoreLBS;		
+		}
+		else if ((Y2>= -0.05) && (Y2<= 0.05)){
+			wScoreLBS += 1.0;
+		}
+		else if ((Y2> 0.05) && (Y2<=  0.1)){
+			wScoreLBS = -20.0 * Y2 + 2  + wScoreLBS;
+		}
+		   
+		   
+		//Z-AXIS
+		if ( Z2 <= -0.9){
+			wScoreLBS += 1.0;
+		}
+		else if( (Z2 < -0.5) && (Z2 > -0.9)){
+			wScoreLBS = -2.5 * Z2 -  1.25 + wScoreLBS;
+		}		
+		
+		return wScoreLBS;	
+	} 
+	//**************** end of wScoreLBS
+
+	private double calcWScoreLFS(double X1, double Y1, double Z1,double X2, double Y2, double Z2){
+		double wScoreLFS;
+		wScoreLFS = 0;
+		
+		// !!! sensorTag on chest
+		// X axis
+		if( (X1 >= -0.8) && (X1 <-0.6) ){
+			wScoreLFS = 5.0 * X1 + 4.0;		
+		}
+		else if ((X1>= -0.6) && (X1<= 0.6)){
+			wScoreLFS = 1.0;
+		}
+		else if ((X1> 0.6) && (X1<=  0.8)){
+			wScoreLFS = -5.0 * X1 + 4.0;
+		}
+		
+		//Y-AXIS
+	   if( (Y1 >= -0.1) && (Y1 <-0.05) ){
+			wScoreLFS = 20.0 * Y1 + 2  + wScoreLFS;		
+		}
+		else if ((Y1>= -0.05) && (Y1<= 0.05)){
+			wScoreLFS += 1.0;
+		}
+		else if ((Y1> 0.05) && (Y1<=  0.1)){
+			wScoreLFS = -20.0 * Y1 + 2  + wScoreLFS;
+		}
+		
+		//Z-AXIS
+		if ( (Z1>= 0.5) && (Z1<0.9)){
+			wScoreLFS = 2.5 * Z1 - 1.25 + wScoreLFS;
+		}
+		else if (Z1>= 0.9){
+			wScoreLFS += 1.0;
+		}
+		
+		//!!! sensorTag on thigh
+		// X axis
+		if( (X2 >= -0.8) && (X2 <-0.6) ){
+			wScoreLFS = 5.0 * X2 + 4.0 + wScoreLFS;		
+		}
+		else if ((X2>= -0.6) && (X2<= 0.6)){
+			wScoreLFS += 1.0;
+		}
+		else if ((X2> 0.6) && (X2<=  0.8)){
+			wScoreLFS = -5.0 * X2 + 4.0 +wScoreLFS;
+		}
+		
+		//Y-AXIS
+	   if( (Y2 >= -0.1) && (Y2 <-0.05) ){
+			wScoreLFS = 20.0 * Y2 + 2  + wScoreLFS;		
+		}
+		else if ((Y2>= -0.05) && (Y2<= 0.05)){
+			wScoreLFS += 1.0;
+		}
+		else if ((Y2> 0.05) && (Y2<=  0.1)){
+			wScoreLFS = -20.0 * Y2 + 2  + wScoreLFS;
+		}
+		
+		//Z-AXIS
+		if ( (Z2>= 0.5) && (Z2<0.9)){
+			wScoreLFS = 2.5 * Z2 - 1.25 + wScoreLFS;
+		}
+		else if (Z2>= 0.9){
+			wScoreLFS += 1.0;
+		}	
+		return wScoreLFS;	
+	}//**************** end of wScoreLFS
+
 	
+	private double calcWScoreLRS(double X1, double Y1, double Z1,double X2, double Y2, double Z2){
+		double wScoreLRS;
+		wScoreLRS = 0;
+		
+		//SENSORTAG ON CHEST
+		// X axis
+		if ( X1 <= -0.8){
+			wScoreLRS = 1.0;
+		}
+		else if( (X1 < -0.75) && (X1 > -0.8)){
+			wScoreLRS = -4.0*X1 - 3.0;
+		}
+		
+		//Y-AXIS
+		if( (Y1 >= -0.1) && (Y1 <-0.05) ){
+			wScoreLRS = 20.0 * Y1 + 2  + wScoreLRS;		
+		}
+		else if ((Y1>= -0.05) && (Y1<= 0.05)){
+			wScoreLRS += 1.0;
+		}
+		else if ((Y1> 0.05) && (Y1<=  0.1)){
+			wScoreLRS = -20.0 * Y1 + 2  + wScoreLRS;
+		}
+		
+		//Z-AXIS
+		if( (Z1 >= -0.9) && (Z1 <-0.5) ){
+			wScoreLRS = 2.5 * Z1 + 2.25 + wScoreLRS;	
+		}
+		else if ((Z1>= -0.5) && (Z1<= 0.5)){
+			wScoreLRS += 1.0;
+		}
+		else if ((Z1 > 0.5) && (Z1 <0.9) ){
+			wScoreLRS = -2.5 * Z1 + 2.25 + wScoreLRS;
+		}
+		
+
+		//SENSORTAG ON THIGH
+		// X axis
+		if ( X2 <= -0.8){
+			wScoreLRS += 1.0;
+		}
+		else if( (X2 < -0.75) && (X2 > -0.8)){
+			wScoreLRS = -4.0*X2 - 3.0 + wScoreLRS;
+		}
+		
+		//Y-AXIS
+		if( (Y2 >= -0.1) && (Y2 <-0.05) ){
+			wScoreLRS = 20.0 * Y2 + 2  + wScoreLRS;		
+		}
+		else if ((Y2>= -0.05) && (Y2<= 0.05)){
+			wScoreLRS += 1.0;
+		}
+		else if ((Y2> 0.05) && (Y2<=  0.1)){
+			wScoreLRS = -20.0 * Y2 + 2  + wScoreLRS;
+		}
+		
+		//Z-AXIS
+		if( (Z2 >= -0.9) && (Z2 <-0.5) ){
+			wScoreLRS = 2.5 * Z2 + 2.25 + wScoreLRS;	
+		}
+		else if ((Z2>= -0.5) && (Z2<= 0.5)){
+			wScoreLRS += 1.0;
+		}
+		else if ((Z2 > 0.5) && (Z2 <0.9) ){
+			wScoreLRS = -2.5 * Z2 + 2.25 + wScoreLRS;
+		}		
+		
+		
+		return wScoreLRS;	
+	}//**************** end of wScoreLRS
+
+	
+	
+	
+	private double calcWScoreLLS(double X1, double Y1, double Z1,double X2, double Y2, double Z2){
+		double wScoreLLS;
+		wScoreLLS = 0;
+		
+		//SENSORTAG ON CHEST
+		// X axis
+		if ( (X1>= 0.75) && (X1<0.8)){
+			wScoreLLS = 4.0 * X1 - 3.0;
+		}
+		else if (X1>= 0.8){ // X> 0.8
+			wScoreLLS = 1.0;
+		}
+		
+		//Y-AXIS
+		if( (Y1 >= -0.1) && (Y1 <-0.05) ){
+			wScoreLLS = 20.0 * Y1 + 2  + wScoreLLS;		
+		}
+		else if ((Y1>= -0.05) && (Y1<= 0.05)){
+			wScoreLLS += 1.0;
+		}
+		else if ((Y1> 0.05) && (Y1<=  0.1)){
+			wScoreLLS = -20.0 * Y1 + 2  + wScoreLLS;
+		}
+		
+		//Z-AXIS
+		if( (Z1 >= -0.9) && (Z1 <-0.5) ){
+			wScoreLLS = 2.5 * Z1 + 2.25 + wScoreLLS;
+		}
+		else if ((Z1>= -0.5) && (Z1<= 0.5)){
+			wScoreLLS += 1.0;
+		}
+		else if ((Z1 > 0.5) && (Z1 <0.9) ){
+			wScoreLLS = -2.5 * Z1 + 2.25 + wScoreLLS;
+		}
+		
+		//SENSORTAG ON THIGH
+		// X axis
+		if ( (X2>= 0.75) && (X2<0.8)){
+			wScoreLLS = 4.0 * X2 - 3.0 +wScoreLLS;
+		}
+		else if (X2>= 0.8){ // X> 0.8
+			wScoreLLS += 1.0;
+		}
+		
+		//Y-AXIS
+		if( (Y2 >= -0.1) && (Y2 <-0.05) ){
+			wScoreLLS = 20.0 * Y2 + 2  + wScoreLLS;		
+		}
+		else if ((Y2>= -0.05) && (Y2<= 0.05)){
+			wScoreLLS += 1.0;
+		}
+		else if ((Y2> 0.05) && (Y2<=  0.1)){
+			wScoreLLS = -20.0 * Y2 + 2  + wScoreLLS;
+		}
+		
+		//Z-AXIS
+		if( (Z2 >= -0.9) && (Z2 <-0.5) ){
+			wScoreLLS = 2.5 * Z2 + 2.25 + wScoreLLS;
+		}
+		else if ((Z2>= -0.5) && (Z2<= 0.5)){
+			wScoreLLS += 1.0;
+		}
+		else if ((Z2 > 0.5) && (Z2 <0.9) ){
+			wScoreLLS = -2.5 * Z2 + 2.25 + wScoreLLS;
+		}
+		
+		
+		return wScoreLLS;	
+	}//**************** end of wScoreLLS
+	
+	private double calcWScoreSIT(double X1, double Y1, double Z1,double X2, double Y2, double Z2){
+		double wScoreSIT;
+		wScoreSIT = 0;
+		
+		//SENSOR TAG ON CHEST:
+		// X axis
+		if ( (X1>= -0.2) && (X1<-0.1)){
+			wScoreSIT = 10.0 * X1 + 2.0;
+		}
+		else if ( (X1>= -0.1) && (X1<=0.1)){ // X> 0.8
+			wScoreSIT = 1.0;
+		}
+		else if ( (X1> 0.1) && (X1<=0.2)){ // X> 0.8
+			wScoreSIT = -10.0 * X1 + 2.0;
+		}
+		//Y-AXIS
+		if( (Y1 > -0.8) && (Y1 <= -0.7) ){
+			wScoreSIT = -10.0 * Y1 - 7  + wScoreSIT;		
+		}
+		else if (Y1<= -0.8){
+			wScoreSIT += 1.0;
+		}
+		//Z-AXIS
+		if( (Z1 >= -0.6) && (Z1 <-0.5) ){
+			wScoreSIT = 10 * Z1 + 6 + wScoreSIT;
+		}
+		else if ((Z1>= -0.5) && (Z1<= 0.3)){
+			wScoreSIT += 1.0;
+		}
+		else if ((Z1 > 0.3) && (Z1 <= 0.4) ){
+			wScoreSIT = -10.0 * Z1 + 4 + wScoreSIT;
+		}
+		
+		
+		//SENSOR TAG ON THIGH
+		// X axis
+		if ( (X2>= -0.3) && (X2<-0.15)){
+			wScoreSIT = 6.67 * X2 + 2.0 + wScoreSIT;
+		}
+		else if ( (X2>= -0.15) && (X1<=0.15)){ // X> 0.8
+			wScoreSIT += 1.0;
+		}
+		else if ( (X2> 0.15) && (X2<=0.3)){ // X> 0.8
+			wScoreSIT = -6.67 * X2 + 2.0 + wScoreSIT;
+		}
+		//Y-AXIS
+		if( (Y2 >= -0.3) && (Y2 < -0.1) ){
+			wScoreSIT = 5.0 * Y2 + 1.5  + wScoreSIT;		
+		}
+		else if ((Y2 >= -0.1) && (Y2 <= 0.1)){
+			wScoreSIT += 1.0;
+		}
+		else if ((Y2 > 0.1) && (Y2 <= 0.3)){
+			wScoreSIT = -5.0 * Y2 + 1.5  + wScoreSIT;	
+		}
+		//Z-AXIS
+		if( (Z2 > -0.8) && (Z2 <=-0.75) ){
+			wScoreSIT = -20.0 * Z1 - 15 + wScoreSIT;
+		}
+		else if ((Z2<= -0.8)){
+			wScoreSIT += 1.0;
+		}
+	
+		
+		return wScoreSIT;	
+	}//**************** end of wScoreSIT
+	
+	private double calcWScoreSTAND(double X1, double Y1, double Z1,double X2, double Y2, double Z2){
+		double wScoreSTAND;
+		wScoreSTAND = 0;
+		
+		//SENSOR TAG ON CHEST:
+		// X axis
+		if ( (X1>= -0.5) && (X1<-0.4)){
+			wScoreSTAND = 10.0 * X1 + 5.0;
+		}
+		else if ( (X1>= -0.4) && (X1<=0.4)){ 
+			wScoreSTAND = 1.0;
+		}
+		else if ( (X1> 0.4) && (X1<=0.5)){ 
+			wScoreSTAND = -10.0 * X1 + 5.0;
+		}
+		//Y-AXIS
+		if( (Y1 > -0.8) && (Y1 <= -0.7) ){
+			wScoreSTAND = -10.0 * Y1 - 7  + wScoreSTAND;		
+		}
+		else if (Y1<= -0.8){
+			wScoreSTAND += 1.0;
+		}
+		//Z-AXIS
+		if( (Z1 >= -0.2) && (Z1 < -0.1) ){
+			wScoreSTAND = 10.0 * Z1 + 2.0 + wScoreSTAND;
+		}
+		else if ((Z1 >= -0.1) && (Z1<= 0.4)){
+			wScoreSTAND += 1.0;
+		}
+		else if ((Z1 > 0.4) && (Z1 <= 0.7) ){
+			wScoreSTAND = -3.33 * Z1 + 2.33 + wScoreSTAND;
+		}
+		
+		
+		//SENSOR TAG ON THIGH
+		// X axis
+		if ( (X2>= -0.3) && (X2<-0.15)){
+			wScoreSTAND = 6.67 * X2 + 2.0 + wScoreSTAND;
+		}
+		else if ( (X2>= -0.15) && (X1<=0.15)){ 
+			wScoreSTAND += 1.0;
+		}
+		else if ( (X2> 0.15) && (X2<=0.3)){ 
+			wScoreSTAND = -6.67 * X2 + 2.0 + wScoreSTAND;
+		}
+		//Y-AXIS
+		if( (Y2 > -0.8) && (Y2 <= -0.7) ){
+			wScoreSTAND = -10.0 * Y2 - 7.0  + wScoreSTAND;		
+		}
+		else if ((Y2 <= -0.8) ){
+			wScoreSTAND += 1.0;
+		}
+		//Z-AXIS
+		if( (Z2 >= -0.4) && (Z2 < -0.3) ){
+			wScoreSTAND = 10.0 * Z2 + 4.0 + wScoreSTAND;
+		}
+		else if ((Z2 >= -0.3) && (Z2 <= 0.3) ){
+			wScoreSTAND += 1.0;
+		}
+		else if ((Z2 >  0.3) && (Z2 <= 0.4)){
+			wScoreSTAND = -10.0 * Z2 + 4.0 + wScoreSTAND;
+		}
+	
+		
+		return wScoreSTAND;	
+	}//**************** end of wScoreSTAND
+
+
+	
+	private double calcWScoreBEND(double X1, double Y1, double Z1,double X2, double Y2, double Z2){
+		double wScoreBEND;
+		wScoreBEND = 0;
+		
+		//SENSOR TAG ON CHEST:
+		// X axis
+		if ( (X1>= -0.5) && (X1<-0.4)){
+			wScoreBEND = 10.0 * X1 + 5.0;
+		}
+		else if ( (X1>= -0.4) && (X1<=0.2)){ 
+			wScoreBEND = 1.0;
+		}
+		else if ( (X1> 0.2) && (X1<=0.3)){ 
+			wScoreBEND = -10.0 * X1 + 3.0;
+		}
+		//Y-AXIS
+		if( (Y1 > -0.8) && (Y1 <= -0.7) ){
+			wScoreBEND = -10.0 * Y1 - 7  + wScoreBEND;		
+		}
+		else if (Y1<= -0.8){
+			wScoreBEND += 1.0;
+		}
+		//Z-AXIS
+		if( (Z1 >= 0.5) && (Z1 < 0.9) ){
+			wScoreBEND = 2.5 * Z1 - 1.25 + wScoreBEND;
+		}
+		else if ((Z1 >= 0.9)){
+			wScoreBEND += 1.0;
+		}
+		
+		
+		
+		//SENSOR TAG ON THIGH
+		// X axis
+		if ( (X2>= -0.3) && (X2<-0.15)){
+			wScoreBEND = 6.67 * X2 + 2.0 + wScoreBEND;
+		}
+		else if ( (X2>= -0.15) && (X1<=0.15)){ 
+			wScoreBEND += 1.0;
+		}
+		else if ( (X2> 0.15) && (X2<=0.3)){ 
+			wScoreBEND = -6.67 * X2 + 2.0 + wScoreBEND;
+		}
+		//Y-AXIS
+		if( (Y2 > -0.8) && (Y2 <= -0.7) ){
+			wScoreBEND = -10.0 * Y2 - 7.0  + wScoreBEND;		
+		}
+		else if ((Y2 <= -0.8) ){
+			wScoreBEND += 1.0;
+		}
+		//Z-AXIS
+		if( (Z2 >= -0.4) && (Z2 < -0.3) ){
+			wScoreBEND = 10.0 * Z2 + 4.0 + wScoreBEND;
+		}
+		else if ((Z2 >= -0.3) && (Z2 <= 0.3) ){
+			wScoreBEND += 1.0;
+		}
+		else if ((Z2 >  0.3) && (Z2 <= 0.4)){
+			wScoreBEND = -10.0 * Z2 + 4.0 + wScoreBEND;
+		}
+	
+		
+		return wScoreBEND;	
+	}//**************** end of wScoreSTAND
 }
