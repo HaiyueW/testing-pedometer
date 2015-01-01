@@ -38,7 +38,7 @@ public class Location extends Activity {
         tileView = new TileView(this);
 
         // Set the minimum parameters
-        tileView.setSize(1157,848);
+        tileView.setSize(9362,6623);
         tileView.addDetailLevel(1f, "tiles/1000_%col%_%row%.png", "downsamples/map.png");
         tileView.addDetailLevel(0.5f, "tiles/500_%col%_%row%.png", "downsamples/map.png");
         tileView.addDetailLevel(0.25f, "tiles/250_%col%_%row%.png", "downsamples/map.png");
@@ -48,22 +48,22 @@ public class Location extends Activity {
         // use pixel coordinates to roughly center it
         // they are calculated against the "full" size of the mapView 
         // i.e., the largest zoom level as it would be rendered at a scale of 1.0f
-        tileView.moveToAndCenter( 1157,848 );
-        tileView.slideToAndCenter( 1157,848 );
+        tileView.moveToAndCenter( 9362,6623 );
+        tileView.slideToAndCenter( 9362,6623 );
 
         // Set the default zoom (zoom out by 4 => 1/4 = 0.25)
-        tileView.setScale( 0.25 );
+        tileView.setScale( 0.125 );
         
-        ImageView markerA = new ImageView(this);
-        markerA.setImageResource(R.drawable.maps_marker_blue);
-        markerA.setTag("Nice");
+//        ImageView markerA = new ImageView(this);
+//        markerA.setImageResource(R.drawable.maps_marker_blue_small);
+//        markerA.setTag("Nice");
 
         ImageView markerB = new ImageView(this);
-        markerB.setImageResource(R.drawable.maps_marker_blue);
+        markerB.setImageResource(R.drawable.maps_marker_blue_small);
         markerB.setTag("Paris");
 
-        tileView.addMarker(markerA, 100, 200, -0.5f, -1.0f);
-        tileView.addMarker(markerB, 300, 500, -0.5f, -1.0f);
+  //      tileView.addMarker(markerA, 100, 200, -0.5f, -1.0f);
+        tileView.addMarker(markerB, 3000, 3000, -0.5f, -1.0f);
     }
 
 	@Override
