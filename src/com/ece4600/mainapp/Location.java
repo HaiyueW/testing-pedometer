@@ -70,7 +70,7 @@ public class Location extends Activity {
         
         // Set the default zoom (zoom out by 4 => 1/4 = 0.25)
         tileView.setScale( 0.125 );
-        tileView.addMarkerEventListener(Calculate_EventListener);
+  //      tileView.addMarkerEventListener(Calculate_EventListener);
         
         ImageView markerA = new ImageView(this);
         markerA.setImageResource(R.drawable.calculator_small); // can use another image for calculate
@@ -79,6 +79,7 @@ public class Location extends Activity {
         ImageView markerB = new ImageView(this);
         markerB.setImageResource(R.drawable.maps_marker_blue_small);
         markerB.setTag("Paris");
+        markerB.setOnClickListener( markerClickListener );
         
         tileView.addMarker(markerA, 0.1, 0.16, -0.5f, -1.0f); // horizontal, vertical 
         tileView.addMarker(markerB, 0.1, 0.16, -0.5f, -1.0f);
@@ -86,17 +87,17 @@ public class Location extends Activity {
 
     }
     
-    public MarkerEventListener Calculate_EventListener = new MarkerEventListener() {
-    	@Override
-    	public void onMarkerTap( View markerB, int x, int y ) {
-    	Toast.makeText( getApplicationContext(), "Calculating", Toast.LENGTH_SHORT).show();
-		objMyTask = new MyTask();
-		objMyTask.execute();
-		tileView.moveMarker(markerB, x_pos, y_pos,-0.5f, -1.0f);
-	//	tileView.addMarker(markerA, 0.3, 0.4);
-    	}
-    };
-    
+//    public MarkerEventListener Calculate_EventListener = new MarkerEventListener() {
+//    	@Override
+//    	public void onMarkerTap( View markerB, int x, int y ) {
+//    	Toast.makeText( getApplicationContext(), "Calculating", Toast.LENGTH_SHORT).show();
+//		objMyTask = new MyTask();
+//		objMyTask.execute();
+//		tileView.moveMarker(markerB, x_pos, y_pos,-0.5f, -1.0f);
+//	//	tileView.addMarker(markerA, 0.3, 0.4);
+//    	}
+//    };
+//    
     
     class MyTask extends AsyncTask<Void, Integer, Void> {
 
@@ -155,7 +156,8 @@ public class Location extends Activity {
 //						e.printStackTrace();
 //					}
 //				}
-			
+			// can use arraylist to implement a tracer. each time the x_pos and y_pos are generated
+			//	place the result into an array list and then use tileView.Drawpath to connect the dots.
 
 			return null;
 		}
@@ -175,6 +177,7 @@ public class Location extends Activity {
 //			y_pos = 0.2;
 			
 			dialog.dismiss();
+			//can make a toast once it is done
 			
 			
 
@@ -194,9 +197,37 @@ public class Location extends Activity {
 //			alert.show();
 		}
 	}
+	
+    public TileView getTileView(){
+		return tileView;
+	}
+	
     
-    
-    
+	private View.OnClickListener markerClickListener = new View.OnClickListener() {
+			@Override
+				    public void onClick( View markerB) {
+					// get reference to the TileView
+					TileView tileView = getTileView();
+					
+					Toast.makeText( getApplicationContext(), "Calculating", Toast.LENGTH_SHORT).show();
+					SampleCallout callout = new SampleCallout( markerB.getContext() , x_pos, y_pos);
+					tileView.addCallout( callout, x_pos, y_pos, -0.5f, -1.0f );
+					callout.transitionIn();
+					objMyTask = new MyTask();
+					objMyTask.execute();
+					tileView.moveMarker(markerB, x_pos, y_pos,-0.5f, -1.0f);
+// we saved the coordinate in the marker's tag
+					
+// lets center the screen to that coordinate
+//					tileView.slideToAndCenter( position[0], position[1] );
+// create a simple callout
+					
+// add it to the view tree at the same position and offset as the marker that invoked it
+					
+// a little sugar
+					
+			}
+};
     
     
     
