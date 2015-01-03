@@ -215,7 +215,8 @@ public class Location extends Activity {
 					callout.transitionIn();
 					objMyTask = new MyTask();
 					objMyTask.execute();
-					tileView.moveMarker(markerB, x_pos, y_pos,-0.5f, -1.0f);
+					tileView.moveMarker(markerB, x_pos, y_pos+0.05,-0.5f, -1.0f);
+					tileView.moveToAndCenter(x_pos, y_pos);
 // we saved the coordinate in the marker's tag
 					
 // lets center the screen to that coordinate
