@@ -135,7 +135,9 @@ public class Location extends Activity {
 		protected Void doInBackground(Void... params) {
 
 			 
-
+/// put algorithm here -------------> result should be output into x_pos and y_pos 
+// x_pos and y_pos are all normalized to 1. // might need conversion to get the right values
+			
 					
 				{x_pos = x_pos +0.1;
 				y_pos = y_pos +0.1;
@@ -146,7 +148,11 @@ public class Location extends Activity {
 					y_pos =0.1;
 				}
 				}
-					
+
+				
+				
+				
+/// <------------------------------------
 //				{
 //					System.out.println(i);
 //					publishProgress(i);
