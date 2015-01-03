@@ -181,7 +181,7 @@ public class Location extends Activity {
 			super.onPostExecute(result);
 //			x_pos = 0.2;
 //			y_pos = 0.2;
-			
+			Toast.makeText( getApplicationContext(), "Location Determination Complete", Toast.LENGTH_SHORT).show();
 			dialog.dismiss();
 			//can make a toast once it is done
 			
