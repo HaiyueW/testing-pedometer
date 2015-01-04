@@ -8,9 +8,13 @@ import java.util.List;
 import org.xmlpull.v1.XmlSerializer;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.wifi.ScanResult;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Xml;
@@ -18,220 +22,227 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-//edited by tianqi
+import com.qozix.tileview.TileView;
+import com.qozix.tileview.markers.MarkerEventListener;
+
+import android.widget.ImageView;
+
 public class Location extends Activity {
 
-	private Button messageButton;
-	private TextView allNetWork;
-	private Button start;
-	private Button stop;
-	private Button check;
-	private Button output;
+    TileView tileView;
+    MyTask objMyTask;
+    double x_pos = 0.1 , y_pos =0.16;
+    private static final int SLEEP_TIME=((60*1000)/1000);
 
-	private WifiAdmin mWifiAdmin;
-	private List<ScanResult> list;
-	private ScanResult mScanResult;
-	private StringBuffer sb = new StringBuffer();
-	private EditText roomnm;
-	private EditText spotnm;
-	
-	private String filename = "fingerprint.xml";
-	
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_location);
-		setupMessageButton1();
-		mWifiAdmin = new WifiAdmin(Location.this);
-		init();
-	}
-	
-	
-	public void init() {
-		messageButton = (Button)findViewById(R.id.scan);
-		allNetWork = (TextView) findViewById(R.id.allNetWork);
-		start = (Button) findViewById(R.id.start);
-		stop = (Button) findViewById(R.id.stop);
-		check = (Button) findViewById(R.id.check);
-		output = (Button) findViewById(R.id.output);
-		roomnm = (EditText) findViewById(R.id.roomnm);
-		spotnm = (EditText) findViewById(R.id.spotnm);
-		start.setOnClickListener(new MyListener());
-		stop.setOnClickListener(new MyListener());
-		check.setOnClickListener(new MyListener());
-		output.setOnClickListener(new MyListener());
-		messageButton.setOnClickListener(new MyListener());
-	}
+    
+    
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-	
-	
-	private class MyListener implements OnClickListener {
+        // Create our TileView
+        tileView = new TileView(this);
+
+        // Set the minimum parameters
+        tileView.setSize(9362,6623);
+        tileView.addDetailLevel(1f, "tiles/1000_%col%_%row%.png", "downsamples/map.png");
+        tileView.addDetailLevel(0.5f, "tiles/500_%col%_%row%.png", "downsamples/map.png");
+        tileView.addDetailLevel(0.25f, "tiles/250_%col%_%row%.png", "downsamples/map.png");
+        tileView.addDetailLevel(0.125f, "tiles/125_%col%_%row%.png", "downsamples/map.png");
+        // Add the view to display it
+        setContentView(tileView);
+        // use pixel coordinates to roughly center it
+        // they are calculated against the "full" size of the mapView 
+        // i.e., the largest zoom level as it would be rendered at a scale of 1.0f
+//        tileView.moveToAndCenter( 9362,6623 );
+//        tileView.slideToAndCenter( 9362,6623 );
+
+        tileView.defineRelativeBounds( 0, 0, 1, 1 );
+        tileView.moveToAndCenter( 0.5, 0.5);
+//        frameTo( 0.5, 0.5 );
+        
+        // Set the default zoom (zoom out by 4 => 1/4 = 0.25)
+        tileView.setScale( 0.125 );
+  //      tileView.addMarkerEventListener(Calculate_EventListener);
+        
+        ImageView markerA = new ImageView(this);
+        markerA.setImageResource(R.drawable.calculator_small); // can use another image for calculate
+        markerA.setTag("Calculate");
+
+        ImageView markerB = new ImageView(this);
+        markerB.setImageResource(R.drawable.maps_marker_blue_small);
+        markerB.setTag("Paris");
+        markerB.setOnClickListener( markerClickListener );
+        
+        tileView.addMarker(markerA, 0.1, 0.16, -0.5f, -1.0f); // horizontal, vertical 
+        tileView.addMarker(markerB, 0.1, 0.16, -0.5f, -1.0f);
+        //        tileView.removeMarker(markerA);
+
+    }
+    
+//    public MarkerEventListener Calculate_EventListener = new MarkerEventListener() {
+//    	@Override
+//    	public void onMarkerTap( View markerB, int x, int y ) {
+//    	Toast.makeText( getApplicationContext(), "Calculating", Toast.LENGTH_SHORT).show();
+//		objMyTask = new MyTask();
+//		objMyTask.execute();
+//		tileView.moveMarker(markerB, x_pos, y_pos,-0.5f, -1.0f);
+//	//	tileView.addMarker(markerA, 0.3, 0.4);
+//    	}
+//    };
+//    
+    
+    class MyTask extends AsyncTask<Void, Integer, Void> {
+
+		Dialog dialog;
+		ProgressBar progressBar;
+		TextView tvLoading,tvPer;
+		Button btnCancel;
 
 		@Override
-		public void onClick(View v) {
-			switch (v.getId()) {
-			case R.id.scan:
-				getAllNetWorkList();
-				break;
-			case R.id.start:
-				mWifiAdmin.openWifi();
-				Toast.makeText(Location.this,
-						"Current WiFi Status is on" + mWifiAdmin.checkState(),
-						Toast.LENGTH_SHORT).show();
-				break;
-			case R.id.stop:
-				mWifiAdmin.closeWifi();
-				Toast.makeText(Location.this,
-						"Current WiFi Status is off" + mWifiAdmin.checkState(),
-						Toast.LENGTH_SHORT).show();
-				break;
-			case R.id.check:
+		protected void onPreExecute() {
+			super.onPreExecute();
+			dialog = new Dialog(Location.this);
+			dialog.setCancelable(false);
+			dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+			dialog.setContentView(R.layout.progressdialog);
 
-				String room = roomnm.getText().toString();
-				String spot = spotnm.getText().toString();
-				if (list != null) {
+			progressBar = (ProgressBar) dialog.findViewById(R.id.progressBar1);
+			tvLoading = (TextView) dialog.findViewById(R.id.tv1);
+			tvPer = (TextView) dialog.findViewById(R.id.tvper);
+			btnCancel = (Button) dialog.findViewById(R.id.btncancel);
 
-					// we have to bind the new file with a FileOutputStream
-					FileOutputStream fileos = null;
-					try {
-						fileos = openFileOutput("fingerprint.xml",
-								Context.MODE_APPEND);
-					} catch (FileNotFoundException e) {
-						Log.e("FileNotFoundException",
-								"can't create FileOutputStream");
-					}
-					// we create a XmlSerializer in order to write xml data
-					XmlSerializer serializer = Xml.newSerializer();
-					try {
-						// we set the FileOutputStream as output for the
-						// serializer, using UTF-8 encoding
-						serializer.setOutput(fileos, "UTF-8");
-						// Write <?xml declaration with encoding (if encoding
-						// not null) and standalone flag (if standalone not
-						// null)
-						// serializer.startDocument(null,
-						// Boolean.valueOf(true));
-						// set indentation option
-						serializer
-								.setFeature(
-										"http://xmlpull.org/v1/doc/features.html#indent-output",
-										true);
-						// start a tag called "root"
-						serializer.startTag(null, "WifiInfo");
-						// i indent code just to have a view similar to xml-tree
+			btnCancel.setOnClickListener(new OnClickListener() {
 
-						serializer.startTag("", "Room");
-						serializer.text(room);
-						serializer.endTag("", "Room");
-						serializer.startTag("", "Spot");
-						serializer.text(spot);
-						serializer.endTag("", "Spot");
-
-						if (list != null) {
-							for (int i = 0; i < list.size(); i++) {
-								
-								mScanResult = list.get(i);
-								String mac = mScanResult.BSSID;
-								String level = "" + mScanResult.level;
-								serializer.startTag("", "BSSID");
-								serializer.text(mac);
-								serializer.endTag("", "BSSID");
-								serializer.startTag("", "level");
-								serializer.text(level);
-								serializer.endTag("", "level");
-							}
-						}
-
-						serializer.endTag(null, "WifiInfo");
-
-						// serializer.endDocument();
-						// write xml data into the FileOutputStream
-						serializer.flush();
-						// finally we close the file stream
-						fileos.close();
-
-					} catch (Exception e) {
-						Log.e("Exception",
-								"error occurred while creating xml file");
-					}
-					Toast.makeText(
-							Location.this,
-							"FingerPrint has been written into XML file"
-									+ filename, Toast.LENGTH_SHORT).show();
-				} else {
-					Toast.makeText(
-							Location.this,
-							"There is no Fingerprint data available currently, please click the scan button",
-							Toast.LENGTH_SHORT).show();
+				@Override
+				public void onClick(View v) {
+					objMyTask.cancel(true);
+					dialog.dismiss();
 				}
-				break;
-			case R.id.output:
+			});
 
-				String oldfile = getFilesDir() + "/fingerprint.xml";
+			dialog.show();
+		}
+
+		@Override
+		protected Void doInBackground(Void... params) {
+
+			 
+/// put algorithm here -------------> result should be output into x_pos and y_pos 
+// x_pos and y_pos are all normalized to 1. // might need conversion to get the right values
 			
-				File file = new File(oldfile);
-				file.delete();
-				break;
-			default:
-				break;
-			}
+					
+				{x_pos = x_pos +0.1;
+				y_pos = y_pos +0.1;
+				if (x_pos > 1){
+					x_pos = 0.3;
+				}
+				if (y_pos > 1){
+					y_pos =0.1;
+				}
+				}
 
-		}
-	
-	}
-	
-	
-	public void getAllNetWorkList() {
-	
-		if (sb != null) {
-			sb = new StringBuffer();
-		}
-	
-		mWifiAdmin.startScan();
-		list = mWifiAdmin.getWifiList();
-		if (list != null) {
-			for (int i = 0; i < list.size(); i++) {
 				
-				mScanResult = list.get(i);
-				sb = sb.append(mScanResult.BSSID + "  ")
-						.append(mScanResult.SSID + "   ")
-						.append(mScanResult.capabilities + "   ")
-						.append(mScanResult.frequency + "   ")
-						.append(mScanResult.level + "\n\n");
-			}
-			allNetWork.setText("WiFi Scan Result\n" + sb.toString());
+				
+				
+/// <------------------------------------
+//				{
+//					System.out.println(i);
+//					publishProgress(i);
+//					try {
+//						Thread.sleep(SLEEP_TIME);
+//					} catch (InterruptedException e) {
+//						e.printStackTrace();
+//					}
+//				}
+			// can use arraylist to implement a tracer. each time the x_pos and y_pos are generated
+			//	place the result into an array list and then use tileView.Drawpath to connect the dots.
+
+			return null;
+		}
+
+		@Override
+		protected void onProgressUpdate(Integer... values) {
+			super.onProgressUpdate(values);
+			progressBar.setProgress(values[0]);
+			tvLoading.setText("Calculating " + values[0] + " %");
+			tvPer.setText(values[0]+" %");
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			super.onPostExecute(result);
+//			x_pos = 0.2;
+//			y_pos = 0.2;
+			Toast.makeText( getApplicationContext(), "Location Determination Complete", Toast.LENGTH_SHORT).show();
+			dialog.dismiss();
+			//can make a toast once it is done
+			
+			
+
+	       
+			//	AlertDialog alert = new AlertDialog.Builder(Location.this).create();
+
+		//		alert.setTitle("Completed!!!");
+		//		alert.setMessage("Your Task is Completed SuccessFully!!!");
+//			alert.setButton("Dismiss", new DialogInterface.OnClickListener() {
+//
+//				@Override
+//				public void onClick(DialogInterface dialog, int which) {
+//					dialog.dismiss();
+//
+//				}
+//			});
+//			alert.show();
 		}
 	}
-
 	
-	
-	private void setupMessageButton1(){
-    	Button messageButton = (Button)findViewById(R.id.returnloca);
-    	messageButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				//Toast.makeText(Location.this, "Return to profile", Toast.LENGTH_LONG).show();
-				startActivity(new Intent(Location.this, MainActivity.class));
-				finish();
-			}
-		});	
-    }
-	
-	public void onBackPressed() {
-		// do something on back.return;		
-		startActivity(new Intent(Location.this, MainActivity.class));
-		finish();
+    public TileView getTileView(){
+		return tileView;
 	}
 	
+    
+	private View.OnClickListener markerClickListener = new View.OnClickListener() {
+			@Override
+				    public void onClick( View markerB) {
+					// get reference to the TileView
+					TileView tileView = getTileView();
+					
+					Toast.makeText( getApplicationContext(), "Calculating", Toast.LENGTH_SHORT).show();
+					SampleCallout callout = new SampleCallout( markerB.getContext() , x_pos, y_pos);
+					tileView.addCallout( callout, x_pos, y_pos, -0.5f, -1.0f );
+					callout.transitionIn();
+					objMyTask = new MyTask();
+					objMyTask.execute();
+					tileView.moveMarker(markerB, x_pos, y_pos+0.05,-0.5f, -1.0f);
+					tileView.moveToAndCenter(x_pos, y_pos);
+// we saved the coordinate in the marker's tag
+					
+// lets center the screen to that coordinate
+//					tileView.slideToAndCenter( position[0], position[1] );
+// create a simple callout
+					
+// add it to the view tree at the same position and offset as the marker that invoked it
+					
+// a little sugar
+					
+			}
+};
+    
+    
+    
+    
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.location, menu);
+		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
 
@@ -240,25 +251,11 @@ public class Location extends Activity {
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
-		super.onOptionsItemSelected(item);
-    	switch(item.getItemId()){
-    	case R.id.locamenu_pedo:
-    		startActivity(new Intent(this, Pedometer.class));
-    		finish();
-    		break;
-    	case R.id.locamenu_heart:
-    		startActivity(new Intent(this, Heartrate.class));
-    		finish();
-    		break;
-    	case R.id.locamenu_post:
-    		startActivity(new Intent(this, Posture.class));
-    		finish();
-    		break;
-    	}
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return true; 
+		int id = item.getItemId();
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 }
+
