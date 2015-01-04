@@ -5,7 +5,7 @@ import android.os.Handler;
 import static android.bluetooth.BluetoothGattCharacteristic.FORMAT_SINT8;
 
 public class sensorTag {
-	private BleWrapper mBleWrapper = null; 
+	 
 	private Handler handler = new Handler();
 	
 	

@@ -30,6 +30,7 @@ public class Heartrate extends Activity implements SensorEventListener {
 		myBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 		bluetoothTest();
 		setupMessageButton();
+		line.initialize();
 	}
 	
 	public void bluetoothTest(){
@@ -139,7 +140,7 @@ public class Heartrate extends Activity implements SensorEventListener {
 	
 	public void startDAQ (View V){
 		if (firstTime){
-		line.initialize();
+		//line.initialize();
 		// initialize accelerometers
 		sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
 		accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);

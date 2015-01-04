@@ -5,30 +5,25 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
-//import android.widget.Toast;
-
 import android.widget.ImageView;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.widget.TextView;
+//import android.widget.Toast;
 
 
 public class Posture extends Activity {
@@ -77,11 +72,12 @@ public class Posture extends Activity {
 		
 		img = (ImageView) findViewById(R.id.displayIMG); 
 		
+		Resources res = getResources();
 		
-		posture_states[0] = BitmapFactory.decodeResource(getResources(), R.drawable.standing);
-		posture_states[1] = BitmapFactory.decodeResource(getResources(), R.drawable.sitting);
-		posture_states[2] = BitmapFactory.decodeResource(getResources(), R.drawable.bending);
-		posture_states[3] = BitmapFactory.decodeResource(getResources(), R.drawable.lying);
+		posture_states[0] = BitmapFactory.decodeResource(getResources(), R.drawable.stand);
+		posture_states[1] = BitmapFactory.decodeResource(getResources(), R.drawable.sit);
+		posture_states[2] = BitmapFactory.decodeResource(getResources(), R.drawable.bend);
+		posture_states[3] = BitmapFactory.decodeResource(getResources(), R.drawable.laydown);
 		
 	
         IntentFilter intentFilter = new IntentFilter("POSTURE_EVENT");
@@ -241,18 +237,34 @@ public class Posture extends Activity {
 	        		
 	        		if (posture.equals("STAND")){
 	        			img.setImageBitmap(posture_states[0]);
+	        			postureText.setText("Standing");
 	        		}
 	        		else if (posture.equals("SIT")){
 	        			img.setImageBitmap(posture_states[1]);
+	        			postureText.setText("Sitting");
 	        		}
 	        		else if (posture.equals("BEND")){
 	        			img.setImageBitmap(posture_states[2]);
+	        			postureText.setText("Bending");
 	        		}
 	        		else if (posture.equals("LIEFRONT")|| posture.equals("LIEBACK") || posture.equals("LIERIGHT") || posture.equals("LIELEFT")){
 	        			img.setImageBitmap(posture_states[3]);
+	        			if (posture.equals("LIEFRONT")){
+	        				postureText.setText("Lying down (front-side)");
+	        			}
+	        			else if(posture.equals("LIEBACK")){
+	        				postureText.setText("Lying down (back-side)");
+	        			}
+	        			else if(posture.equals("LIERIGHT")){
+	        				postureText.setText("Lying down (right-side)");
+	        			}
+	        			else if(posture.equals("LIELEFT")){
+	        				postureText.setText("Lying down (left-side)");
+	        				
+	        			}	        			
 	        		}
 	        		
-	        		postureText.setText(posture);
+	        		
 	        	}
 	        
 	    }
