@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.net.wifi.ScanResult;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.util.Xml;
 import android.view.Menu;
@@ -181,7 +182,15 @@ public class Location extends Activity {
 			super.onPostExecute(result);
 //			x_pos = 0.2;
 //			y_pos = 0.2;
-			Toast.makeText( getApplicationContext(), "Location Determination Complete", Toast.LENGTH_SHORT).show();
+			final Toast toast = Toast.makeText(getApplicationContext(), "Location Determination Complete", Toast.LENGTH_SHORT);
+			    toast.show();
+			    Handler handler = new Handler();
+			        handler.postDelayed(new Runnable() {
+			           @Override
+			           public void run() {
+			               toast.cancel(); 
+			           }
+			    }, 700);
 			dialog.dismiss();
 			//can make a toast once it is done
 			
@@ -215,7 +224,15 @@ public class Location extends Activity {
 					// get reference to the TileView
 					TileView tileView = getTileView();
 					
-					Toast.makeText( getApplicationContext(), "Calculating", Toast.LENGTH_SHORT).show();
+					final Toast toast = Toast.makeText(getApplicationContext(), "Calculating", Toast.LENGTH_SHORT);
+				    toast.show();
+				    Handler handler = new Handler();
+				        handler.postDelayed(new Runnable() {
+				           @Override
+				           public void run() {
+				               toast.cancel(); 
+				           }
+				    }, 100);
 					SampleCallout callout = new SampleCallout( markerB.getContext() , x_pos, y_pos);
 					tileView.addCallout( callout, x_pos, y_pos, -0.5f, -1.0f );
 					callout.transitionIn();

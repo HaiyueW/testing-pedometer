@@ -57,5 +57,24 @@
     <string name="blueoff">Turn Off</string>
     <string name="bluetooth">Bluetooth Setting</string>
     <string name="bluecancel">Cancel</string>
+    <string name="pedo_currentacc">Current Acceleration</string>
+    <string name="pedo_xaxis">X-Axis</string>
+    <string name="pedo_yaxis">Y-Axis</string>
+    <string name="pedo_zaxis">Z-Axis</string>
+    <string name="pedo_xaxisdata">0.0</string>
+    <string name="pedo_yaxisdata">0.0</string>
+    <string name="pedo_zaxisdata">0.0</string>
+    <string name="pedo_maxacc">Max Acceleration</string>
+    <string name="pedo_xaxismax">Acc-X</string>
+    <string name="pedo_yaxismax">Acc-Y</string>
+    <string name="pedo_zaxismax">Acc-Z</string>
+    <string name="pedo_accxmax">0.0</string>
+    <string name="pedo_accymax">0.0</string>
+    <string name="pedo_acczmax">0.0</string>
+    <string name="pedo_step">Step detection</string>
+    <string name="pedo_stepnum">0.0</string>
+    <string name="pedo_reset">Reset</string>
+    <string name="pedo_start">Start</string>
+    <string name="pedo_stop">Stop</string>
 
 </resources>
