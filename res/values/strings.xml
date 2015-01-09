@@ -76,5 +76,7 @@
     <string name="pedo_reset">Reset</string>
     <string name="pedo_start">Start</string>
     <string name="pedo_stop">Stop</string>
+    <string name="pedo_speed">Walking Speed</string>
+    <string name="pedo_speednum">0.0</string>
 
 </resources>
