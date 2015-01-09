@@ -40,7 +40,7 @@ public class Pedometer extends Activity implements SensorEventListener{
 	private TextView currentX, currentY, currentZ, maxX, maxY, maxZ, step, speed;	
 	Button reset, returnbutton, start, stop;
     private long LastStepDetection = 0;
-    private float StepDetectionDelta = 3500, speednum = 0;
+    private float StepDetectionDelta = 0, speednum = 0;
     private double DifferenceDelta = 1.0;
     private double minPeak = 3.0;
 
@@ -172,7 +172,7 @@ public class Pedometer extends Activity implements SensorEventListener{
 			maxY.setText("0.0");
 			maxZ.setText("0.0");
 			step.setText("0.0");
-			step.setText("0.0");
+			speed.setText("0.0");
 			break;
 		default:
 			break;
@@ -287,7 +287,7 @@ public class Pedometer extends Activity implements SensorEventListener{
 							LastStepDetection = time;
 							stepnum++;
 							step.setText(Integer.toString(stepnum));
-							speednum = stepnum/delta;
+							speednum = stepnum/timeSeconds;
 							speed.setText(Float.toString(speednum));
 							iteration++;
 							xp = 0;
@@ -316,7 +316,7 @@ public class Pedometer extends Activity implements SensorEventListener{
 							LastStepDetection = time;
 							stepnum++;
 							step.setText(Integer.toString(stepnum));
-							speednum = stepnum/delta;
+							speednum = stepnum/timeSeconds;
 							speed.setText(Float.toString(speednum));
 							iteration++;
 							yp = 0;
@@ -345,7 +345,7 @@ public class Pedometer extends Activity implements SensorEventListener{
 							LastStepDetection = time;
 							stepnum++;
 							step.setText(Integer.toString(stepnum));
-							speednum = stepnum/delta;
+							speednum = stepnum/timeSeconds;
 							speed.setText(Float.toString(speednum));
 							iteration++;
 							zp = 0;
