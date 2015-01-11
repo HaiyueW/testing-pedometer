@@ -24,25 +24,24 @@ import android.widget.Toast;
 
 public class Pedometer extends Activity implements SensorEventListener{
 	private boolean startflag = false;
-	private float lastX = 0, lastY = 0, lastZ = 0;
-	private float X = 0, Y = 0, Z = 0;
+	private double X = 0, Y = 0, Z = 0;
 	private SensorManager sensorManager;
 	private Sensor accelerometer;
-	private float deltaXMax = 0;
-	private float deltaYMax = 0;
-	private float deltaZMax = 0;
-	private float deltaX = 0;
-	private float deltaY = 0;
-	private float deltaZ = 0;
-	private float test = 0;
-	private float MaxX = 0, xoldvalue = 0,MaxY = 0, yoldvalue = 0, MaxZ = 0, zoldvalue = 0;
-	private int stepnum = 0, i = 0, xp = 0, yp = 0, zp = 0, xn = 0, yn = 0, zn = 0, iteration = 500;
+	private double deltaXMax = 0;
+	private double deltaYMax = 0;
+	private double deltaZMax = 0;
+	private double deltaX = 0, lastX = 0;
+	private double deltaY = 0, lastY = 0;
+	private double deltaZ = 0, lastZ = 0;
+	private double test = 0;
+	private double MaxX = 0, xoldvalue = 0,MaxY = 0, yoldvalue = 0, MaxZ = 0, zoldvalue = 0;
+	private int stepnum = 0, i = 0, iteration = 500;
+	public double xp = 0, yp = 0, zp = 0, xn = 0, yn = 0, zn = 0;
 	private TextView currentX, currentY, currentZ, maxX, maxY, maxZ, step, speed;	
 	Button reset, returnbutton, start, stop;
-    private long LastStepDetection = 0;
-    private float StepDetectionDelta = 0, speednum = 0;
-    private double DifferenceDelta = 1.0;
-    private double minPeak = 3.0;
+	public FFT[] sample;
+	public FFT[] fft;
+	
 
 
 	@Override
@@ -104,24 +103,24 @@ public class Pedometer extends Activity implements SensorEventListener{
 	
 	// display the current x,y,z accelerometer values
 	public void displayCurrentValues() {
-		currentX.setText(Float.toString(X));
-		currentY.setText(Float.toString(Y));
-		currentZ.setText(Float.toString(Z));
+		currentX.setText(Double.toString(X));
+		currentY.setText(Double.toString(Y));
+		currentZ.setText(Double.toString(Z));
 		}
 
 	// display the max x,y,z accelerometer values
 	public void displayMaxValues() {
 		if (deltaX > deltaXMax) {
 			deltaXMax = deltaX;
-			maxX.setText(Float.toString(deltaXMax));
+			maxX.setText(Double.toString(deltaXMax));
 			}
 		if (deltaY > deltaYMax) {
 			deltaYMax = deltaY;
-			maxY.setText(Float.toString(deltaYMax));
+			maxY.setText(Double.toString(deltaYMax));
 			}
 		if (deltaZ > deltaZMax) {
 			deltaZMax = deltaZ;
-			maxZ.setText(Float.toString(deltaZMax));
+			maxZ.setText(Double.toString(deltaZMax));
 			}
 		}
 	
@@ -149,9 +148,6 @@ public class Pedometer extends Activity implements SensorEventListener{
 			X = 0;
 			Y = 0;
 			Z = 0;
-			lastX = 0;
-			lastY = 0;
-			lastZ = 0;
 			i = 0;
 			xp = 0;
 			yp = 0;
@@ -164,7 +160,6 @@ public class Pedometer extends Activity implements SensorEventListener{
 			MaxZ = 0;
 			iteration = 500;
 			stepnum = 0;
-			speednum = 0;
 			currentX.setText("0.0");
 			currentY.setText("0.0");
 			currentZ.setText("0.0");
@@ -255,123 +250,46 @@ public class Pedometer extends Activity implements SensorEventListener{
 			Z = event.values[2];
 //			Double vector = Math.sqrt(X * X + Y * Y + Z * Z);
 //			double average = (Math.abs(X)+Math.abs(Y)+Math.abs(Z))/3;
-	        long time = System.currentTimeMillis();
-			long delta = time - LastStepDetection;
-	        long timeSeconds = TimeUnit.MILLISECONDS.toSeconds(delta);
 			test = Math.max(Math.abs(X), Math.max(Math.abs(Y), Math.abs(Z)));
 			// if the change is below 1.5, it is just plain noise
 			if ((deltaX < 1.5) && (deltaY < 1.5) && (deltaZ < 1.5)){
 				deltaX = 0;
 				deltaY = 0;
 				deltaZ = 0; 
-			}else if (iteration == 500){
-				iteration  = 0;
-				if ((test == Math.abs(X)) && (test > 1.5)){
-					i = 1;
-				}else if ((test == Math.abs(Y)) && (test > 1.5)){
-					i = 2;
-				}else if ((test == Math.abs(Z)) && (test > 1.5)){
-					i = 3;
-					}
-				}
-
-			switch(i){
-			case 1:
-				if (deltaX > 0){
-					xp++;
-					MaxX = Math.max(MaxX, Math.max(Math.abs(X), xoldvalue));
-				}else if(xp > 2){
-					if (deltaX < 0){
-						xn++;
-						if (xn > 1 && delta > StepDetectionDelta && MaxX - Math.abs(X) > minPeak){
-							LastStepDetection = time;
-							stepnum++;
-							step.setText(Integer.toString(stepnum));
-							speednum = stepnum/timeSeconds;
-							speed.setText(Float.toString(speednum));
-							iteration++;
-							xp = 0;
-							xn = 0;
-							MaxX = 0;
-						}
-					}
-				}
-				xoldvalue = Math.abs(X);
-				Log.i("Pedometer", "Step detected Xaxis" + stepnum + "Delta time" + delta);
-//				if (vector - average > DifferenceDelta && delta > StepDetectionDelta && minPeak < vector) {
-//		        	LastStepDetection = time;
-//		        	stepnum++;
-//		            step.setText(Long.toString(delta));
-//		            iteration++;
-//		        }
-				break;
-			case 2:
-				if (deltaY > 0){
-					yp++;
-					MaxY = Math.max(MaxY, Math.max(Math.abs(Y), yoldvalue));
-				}else if(yp > 2){
-					if (deltaY < 0){
-						yn++;
-						if (yn > 1 && delta > StepDetectionDelta && MaxY - Math.abs(Y) > minPeak){
-							LastStepDetection = time;
-							stepnum++;
-							step.setText(Integer.toString(stepnum));
-							speednum = stepnum/timeSeconds;
-							speed.setText(Float.toString(speednum));
-							iteration++;
-							yp = 0;
-							yn = 0;
-							MaxY = 0;
-						}
-					}
-				}
-				yoldvalue = Math.abs(Y);
-				Log.i("Pedometer", "Step detected Yaxis " + stepnum + "Delta time" + delta);
-//				if (vector - average > DifferenceDelta && delta > StepDetectionDelta && minPeak < vector) {
-//		        	LastStepDetection = time;
-//		        	stepnum++;
-//		            step.setText(Long.toString(delta)); 
-//		            iteration++;
-//		        }
-				break;
-			case 3:
-				if (deltaZ > 0){
-					zp++;
-					MaxZ = Math.max(MaxZ, Math.max(Math.abs(Z), zoldvalue));
-				}else if(zp > 2){
-					if (deltaZ < 0){
-						zn++;
-						if (zn > 1 && delta > StepDetectionDelta  && MaxZ - Math.abs(Z) > minPeak){
-							LastStepDetection = time;
-							stepnum++;
-							step.setText(Integer.toString(stepnum));
-							speednum = stepnum/timeSeconds;
-							speed.setText(Float.toString(speednum));
-							iteration++;
-							zp = 0;
-							zn = 0;
-							MaxZ = 0;
-						}
-					}
-				}
-				zoldvalue = Math.abs(Z);
-				Log.i("Pedometer", "Step detected Zaxis " + stepnum + "Delta time" + delta );
-//				if (vector - average > DifferenceDelta && delta > StepDetectionDelta && minPeak < vector) {
-//		        	LastStepDetection = time;
-//		        	stepnum++;
-//		            step.setText(Long.toString(delta));
-//		            iteration++;
-//		        }
-				break;
-			default:
-				break;				
 			}
-			// set the last know values of x,y,z
-			lastX = event.values[0];
-			lastY = event.values[1];
-			lastZ = event.values[2];
+			int N = 1024;          // size of FFT and sample window
+			int Fs = 40;        // sample rate = 40 Hz
+			sample = new dataSample[N];           // input PCM data buffer
+			fft = new fftbuffer[N * 2];        // FFT complex buffer (interleaved real/imag)
+					magnitude[N / 2]  // power spectrum
 
+					capture audio in data[] buffer
+					apply window function to data[]
+
+					// copy real input data to complex FFT buffer
+					for i = 0 to N - 1
+					  fft[2*i] = data[i]
+					  fft[2*i+1] = 0
+
+					perform in-place complex-to-complex FFT on fft[] buffer
+
+					// calculate power spectrum (magnitude) values from fft[]
+					for i = 0 to N / 2 - 1
+					  re = fft[2*i]
+					  im = fft[2*i+1]
+					  magnitude[i] = sqrt(re*re+im*im)
+
+					// find largest peak in power spectrum
+					max_magnitude = -INF
+					max_index = -1
+					for i = 0 to N / 2 - 1
+					  if (magnitude[i] > max_magnitude){
+					    max_magnitude = magnitude[i]；
+					    max_index = i；
+					  }
+
+					// convert index of largest peak to frequency
+					freq = max_index * Fs / N；
 		}
 		}
-
 }
